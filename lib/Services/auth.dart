@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'models.dart';
+import 'package:orbital_2020_usono_my_ver/Models/User.dart';
+import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth
@@ -51,7 +52,7 @@ class AuthService {
       FirebaseUser user = result.user;
 
       // create a new document for the user, with its uid
-      await userDBservice(user.uid).updateUserData(name);
+      await UserDbService(uid: user.uid).updateUserData(name);
 
       return _userFromFirebaseUser(user);
     } catch (e) {
@@ -72,24 +73,6 @@ class AuthService {
   }
 }
 
-class roomDBservice {
-  final String roomName;
-  roomDBservice({this.roomName});
-  final Firestore fs = Firestore.instance;
 
-  Future createChatRoom(String roomName) async {
-    // creates a chat room. The plan is to make each room a document in the Rooms collection, then there is a subcollection of messages in each room.
-    CollectionReference collection = fs.collection("Rooms");
-    await collection.add({"roomName": roomName});
-  }
-}
 
-class userDBservice {
-  final String uid;
-  userDBservice(this.uid);
-  CollectionReference userCollection = Firestore.instance.collection('Users');
 
-  Future updateUserData(String name) async {
-    await userCollection.document(uid).setData({"Name": name});
-  }
-}
