@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
+<<<<<<< HEAD
+=======
+import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+>>>>>>> df30834a51b59e583e6f7a612b341dc501d050fb
 
 class ChatRoomSettingsForm extends StatefulWidget {
   @override
@@ -11,6 +16,24 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
   String _currentRoomName = '';
   final _formKey = GlobalKey<FormState>();
   final RoomDbService _database = new RoomDbService();
+<<<<<<< HEAD
+=======
+  Position _location = Position(latitude: 0.0, longitude: 0.0);
+
+  void _getCurrentLocation(String roomid) async {
+    final location = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      _location = location;
+    });
+
+    Firestore.instance.collection('Rooms').document(roomid).setData({
+      'Latitude': _location.latitude,
+      'Longitude': _location.longitude,
+    }, merge: true);
+  }
+>>>>>>> df30834a51b59e583e6f7a612b341dc501d050fb
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +61,16 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
               if (_formKey.currentState.validate()) {
                 // create a collection which is to be named after _currentRoomName
                 dynamic result =
+<<<<<<< HEAD
                 await _database.createChatRoom(_currentRoomName);
 
                 Navigator.pushNamed(context, '/ChatRoomPage');
 
+=======
+                    await _database.createChatRoom(_currentRoomName);
+                _getCurrentLocation(result.documentID);
+                Navigator.pushNamed(context, '/ChatRoomPage');
+>>>>>>> df30834a51b59e583e6f7a612b341dc501d050fb
 //                if (result = null) { // need to do testing
 //                  print("if");
 //                } else {
@@ -56,4 +85,8 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> df30834a51b59e583e6f7a612b341dc501d050fb
