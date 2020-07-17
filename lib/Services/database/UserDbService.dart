@@ -19,4 +19,8 @@ class UserDbService {
   Stream<List<db_User>> get dbUserList {
     return userCollection.snapshots().map(_dbUserListFromSnapshot);
   }
+
+  Future<String> getNameFromUser() async { // since User objects don't have a name attribute
+    return await userCollection.document(uid).get().then((doc) => doc.data["Name"]);
+  }
 }

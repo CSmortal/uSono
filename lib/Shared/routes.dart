@@ -6,6 +6,7 @@ class RouteHandler{
   static Route<dynamic> generateRoute(RouteSettings settings){ // onGenerateRoute callback will create a RouteSettings object
     final args = settings.arguments;
 
+
     switch(settings.name) {
 //      case '/':
 //        return MaterialPageRoute(builder: (_) => LoginPage());
@@ -14,8 +15,7 @@ class RouteHandler{
 
     // perhaps we could just use Navigator.pop(context) to return from the ChatRoomPage back to the Home() widget.
       case '/ChatRoomPage':
-        print('Reached route handler...');
-        return MaterialPageRoute(builder: (_) => ChatRoomPage());
+        return MaterialPageRoute(builder: (_) => ChatRoomPage(args));
     //MaterialPageRoute<T> replaces the entire screen with a platform
     //adaptive transition
       default:

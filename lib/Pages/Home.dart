@@ -64,7 +64,10 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                 '/ChatRoomPage',
-                arguments: text,
+//                arguments: {
+//                  "roomName": ,
+//                  "roomID": ,
+//                },
               ),
               child: Text('\n  $text',
                   style: TextStyle(color: Colors.white, fontSize: 25)),
@@ -93,7 +96,6 @@ class _HomeState extends State<Home> {
     final dbUserList = Provider.of<List<db_User>>(context);
     final firestoreInstance =  Firestore.instance;
 
-    RoomDbService database = new RoomDbService();
 
     assert(dbUserList != null);
 
