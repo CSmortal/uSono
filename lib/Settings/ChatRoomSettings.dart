@@ -37,10 +37,13 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
             onPressed: () async {
               if (_formKey.currentState.validate()) {
                 // create a collection which is to be named after _currentRoomName
-                dynamic result =
-                await _database.createChatRoom(_currentRoomName);
+                String roomID =
+                    await _database.createChatRoom(_currentRoomName);
 
-                Navigator.pushNamed(context, '/ChatRoomPage');
+                Navigator.pushNamed(context, '/ChatRoomPage', arguments: {
+                  "roomName": _currentRoomName,
+                  "roomID": roomID
+                });
 
 //                if (result = null) { // need to do testing
 //                  print("if");
