@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
         .setData({"Coordinates": location});
   }
 
-  Widget _buildListWidget(Color color, var text) {
+  Widget _buildListWidget(Color color, String roomName, String roomID) {
     return Container(
         height: 150,
         child: Card(
@@ -64,12 +64,12 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                 '/ChatRoomPage',
-//                arguments: {
-//                  "roomName": ,
-//                  "roomID": ,
-//                },
+                arguments: {
+                  "roomName": roomName,
+                  "roomID": roomID,
+                },
               ),
-              child: Text('\n  $text',
+              child: Text('\n  $roomName',
                   style: TextStyle(color: Colors.white, fontSize: 25)),
             )));
   }
@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
         return new ListView(
           children: snapshot.data.documents.map((document) {
             return _buildListWidget(
-                Colors.blue[100], document.data['roomName']);
+                Colors.blue[100], document.data['roomName'], document.documentID);
           }).toList(),
         );
       },
