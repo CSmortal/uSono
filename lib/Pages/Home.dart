@@ -37,6 +37,19 @@ class _HomeState extends State<Home> {
     });
   }
 
+  _filteredRooms(double dist, var snapshot) async {
+    return Firestore.instance
+        .collection('Rooms')
+        .where(dist <
+            await Geolocator().distanceBetween(
+              _position.latitude,
+              _position.longitude,
+              snapshot.data.document['Latitude'],
+              snapshot.date.document['Longitude'],
+            ))
+        .getDocuments();
+  }
+
   void _showSettingsPanel() {
     showModalBottomSheet(
         context: context,
@@ -76,13 +89,19 @@ class _HomeState extends State<Home> {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('Rooms').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        _filteredRooms(175.0, snapshot).then((QuerySnapshot docs) {
+          if (docs.documents.isNotEmpty) {
+            return new ListView(
+              children: docs.documents.map((document) {
+                return _buildListWidget(Colors.blue[100],
+                    document.data['roomName'], document.documentID);
+              }).toList(),
+            );
+          } else if (docs.documents.isEmpty) {
+            return Text('No rooms available');
+          }
+        });
         if (!snapshot.hasData) return new Text('Loading...');
-        return new ListView(
-          children: snapshot.data.documents.map((document) {
-            return _buildListWidget(Colors.blue[100], document.data['roomName'],
-                document.documentID);
-          }).toList(),
-        );
       },
     );
   }
@@ -107,13 +126,14 @@ class _HomeState extends State<Home> {
             body: CustomScrollView(slivers: <Widget>[
               SliverAppBar(
                 leading: RaisedButton.icon(
-                    label: Text("Create Room"), // Overflow error
-                    icon: Icon(Icons.add),
-                    // onPressed: () => _showSettingsPanel(),
-                    onPressed: () {
-                      print(_position.latitude);
-                      print(_position.longitude);
-                    }),
+                  label: Text("Create Room"), // Overflow error
+                  icon: Icon(Icons.add),
+                  onPressed: () => _showSettingsPanel(),
+                  //  This was used just to test if the stream works. It does!
+                  //  onPressed: () {
+                  //  print(_position.latitude);
+                  //  print(_position.longitude);
+                ),
                 expandedHeight: 200.0,
                 floating: true,
                 pinned: true,
@@ -162,7 +182,6 @@ class _HomeState extends State<Home> {
                     onPressed: () async {
                       setState(() => loading = true);
                       await _auth.signOut();
-
 //                        if (result == null) {
 //                          setState(() => {
 //                            loading = false,
