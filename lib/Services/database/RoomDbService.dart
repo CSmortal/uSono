@@ -43,6 +43,6 @@ class RoomDbService{ // manages the Rooms collection in the database, and thus a
   }
 
     Stream<QuerySnapshot> getRoomMessages() {
-      return Firestore.instance.collection('Rooms').document('$roomName').collection('Messages').orderBy("time").snapshots();
+      return Firestore.instance.collection('Rooms').document(roomID).collection('Messages').orderBy("time").snapshots();
     }
 }

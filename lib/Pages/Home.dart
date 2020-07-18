@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
+import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Settings/ChatRoomSettings.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +23,12 @@ class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   final Firestore firestoreInstance = Firestore.instance;
   Position _location = Position(latitude: 0.0, longitude: 0.0);
-
   bool loading = false;
+
+
+//  Future retrieveUserName() async {
+//    userName = await UserDbService(uid: user.uid).getNameFromUser();
+//  }
 
   void _showSettingsPanel() {
     showModalBottomSheet(
@@ -92,16 +97,19 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
+    // final dbUserList = Provider.of<List<db_User>>(context);
+    final fs =  Firestore.instance;
     final user = Provider.of<User>(context);
-    final dbUserList = Provider.of<List<db_User>>(context);
-    final firestoreInstance =  Firestore.instance;
 
 
-    assert(dbUserList != null);
+    // assert(dbUserList != null);
 
     // find the name of the user, by finding the document whose documentID = user.uid, where user is the User object whose uid is the same as the FirebaseUser instance's uid property
-    final userName = dbUserList.singleWhere((element) => element.user.uid == user.uid).name;
+
+    //final userName = dbUserList.singleWhere((element) => element.user.uid == user.uid).name;
 //    querySS.documents.forEach((doc) => print(doc.documentID));
+
+
 
 
     return loading
@@ -142,10 +150,21 @@ class _HomeState extends State<Home> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    new Text('Hello there, ${userName}',
-                      style: TextStyle(fontSize: 20,
-                          fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
+                    new FutureBuilder(
+                      future: UserDbService(uid: user.uid).getNameFromUser(),
+                      builder: (context, snapshot) {
+
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return new Text('Hello there, ${snapshot.data}',
+                            style: TextStyle(fontSize: 20,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          );
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+
+                      }
                     ),
                     //new Text(alias, style:
                     //  TextStyle(fontSize: 16,
