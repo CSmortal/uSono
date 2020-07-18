@@ -12,15 +12,20 @@ class UserDbService {
     await userCollection.document(uid).setData({"Name": name});
   }
 
-  List<db_User> _dbUserListFromSnapshot(QuerySnapshot snapshot){
-    return snapshot.documents.map((doc) => db_User(doc.data["Name"], new User(doc.documentID))).toList();
+  List<db_User> _dbUserListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents
+        .map((doc) => db_User(doc.data["Name"], new User(doc.documentID)))
+        .toList();
   }
 
   Stream<List<db_User>> get dbUserList {
     return userCollection.snapshots().map(_dbUserListFromSnapshot);
   }
 
-  Future<String> getNameFromUser() async { // since User objects don't have a name attribute
-    return await userCollection.document(uid).get().then((doc) => doc.data["Name"]);
+  Future<String> getNameFromUser() async {
+    // since User objects don't have a name attribute
+    // await userCollection.document(uid).get().then((doc) => doc.data["Name"]);
+    DocumentSnapshot docSS = await userCollection.document(uid).get();
+    return docSS.data["Name"];
   }
 }

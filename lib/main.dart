@@ -22,9 +22,6 @@ class ChatApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         StreamProvider<User>.value(value: AuthService().user),
-        StreamProvider<List<db_User>>.value(value: UserDbService().dbUserList),
-//        StreamProvider<QuerySnapshot>.value(
-//            value: Firestore.instance.collection("Rooms").snapshots()),
       ],
       child: MaterialApp(
         home: Wrapper(),

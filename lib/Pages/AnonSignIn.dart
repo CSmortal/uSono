@@ -30,107 +30,112 @@ class _AnonSignInState extends State<AnonSignIn> {
         ? Loading()
         : Scaffold(
       backgroundColor: Colors.teal[200],
-      body: new Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          //[<image widget to be inserted>
-          //],
-          new Column(
-            children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: SizedBox.expand(),
-              ),
-              FlutterLogo(
-                // size: _iconAnimation.value * 100,
-                size: 100,
-              ),
-              Flexible(
-                flex: 4,
-                child: new Form(
-                  key: _formKey,
-                  child: new Theme(
-                    data: new ThemeData(
-                      brightness: Brightness.dark,
-                      primarySwatch: Colors.teal,
-                      inputDecorationTheme: new InputDecorationTheme(
-                        labelStyle: new TextStyle(
-                          fontSize: 20,
+      body: Column(
+
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                  children: <Widget>[
+
+                    new SizedBox(
+                      height: 80,
+                    ),
+
+                    FlutterLogo(
+                      // size: _iconAnimation.value * 100,
+                      size: 100,
+                    ),
+
+                    new Form(
+                      key: _formKey,
+                      child: new Theme(
+
+                        data: new ThemeData(
+                          brightness: Brightness.dark,
+                          primarySwatch: Colors.teal,
+                          inputDecorationTheme: new InputDecorationTheme(
+                            labelStyle: new TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+
+                        child: new Container(
+                          padding: const EdgeInsets.all(40.0),
+                          child: new Column(
+                            children: <Widget>[
+                              new Text('uSono'),
+                              new TextFormField(
+                                  validator: (val) => val.length < 3
+                                      ? 'Your name has to be at least 3 characters long.'
+                                      : null,
+                                  decoration: new InputDecoration(
+                                    labelText:
+                                    "What would you like to be called?",
+                                  ),
+                                  // controller: _aliasController,
+                                  onChanged: (text) {
+                                    setState(() {
+                                      name = text;
+                                    });
+                                  }),
+                              Container(
+                                height: 40,
+                                child: Text(error),
+                              ),
+                              MaterialButton(
+                                height: 40,
+                                minWidth: 60,
+                                color: Colors.white,
+                                textColor: Colors.black,
+                                child: new Text("Enter Anonymously!"),
+                                onPressed: () async {
+                                  if (_formKey.currentState.validate()) {
+                                    dynamic result =
+                                    await _auth.signInAnon();
+                                    if (result == null) {
+                                      setState(() {
+                                        error = 'Oops! There is an error';
+                                      });
+                                    } else {
+                                      firestoreInstance
+                                          .collection("Users")
+                                          .document(result.uid)
+                                          .setData({
+                                        "Name": name,
+                                      });
+                                    } // no need for else block
+                                  }
+                                },
+                              ),
+                              SizedBox(height: 18),
+                              Text("or"),
+                              SizedBox(height: 18),
+                              MaterialButton(
+                                height: 40,
+                                minWidth: 60,
+                                color: Colors.white,
+                                textColor: Colors.black,
+                                child: new Text("Return to Login Page"),
+                                onPressed: () {
+                                  setState(() {
+                                    backToSignIn = true;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    child: new Container(
-                      padding: const EdgeInsets.all(40.0),
-                      child: new Column(
-                        children: <Widget>[
-                          new Text('uSono'),
-                          new TextFormField(
-                              validator: (val) => val.length < 3
-                                  ? 'Your name has to be at least 3 characters long.'
-                                  : null,
-                              decoration: new InputDecoration(
-                                labelText:
-                                "What would you like to be called?",
-                              ),
-                              // controller: _aliasController,
-                              onChanged: (text) {
-                                setState(() {
-                                  name = text;
-                                });
-                              }),
-                          Container(
-                            height: 40,
-                            child: Text(error),
-                          ),
-                          MaterialButton(
-                            height: 40,
-                            minWidth: 60,
-                            color: Colors.white,
-                            textColor: Colors.black,
-                            child: new Text("Enter Anonymously!"),
-                            onPressed: () async {
-                              if (_formKey.currentState.validate()) {
-                                dynamic result =
-                                await _auth.signInAnon();
-                                if (result == null) {
-                                  setState(() {
-                                    error = 'Oops! There is an error';
-                                  });
-                                } else {
-                                  firestoreInstance
-                                      .collection("Users")
-                                      .document(result.uid)
-                                      .setData({
-                                    "Name": name,
-                                  });
-                                } // no need for else block
-                              }
-                            },
-                          ),
-                          SizedBox(height: 18),
-                          Text("or"),
-                          SizedBox(height: 18),
-                          MaterialButton(
-                            height: 40,
-                            minWidth: 60,
-                            color: Colors.white,
-                            textColor: Colors.black,
-                            child: new Text("Return to Login Page"),
-                            onPressed: () {
-                              setState(() {
-                                backToSignIn = true;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                  ]
               ),
-            ],
+
+            ),
           ),
         ],
+
       ),
     );
   }
