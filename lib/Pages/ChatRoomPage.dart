@@ -60,6 +60,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
               flex: 8,
               child: StreamBuilder<QuerySnapshot>(
                 stream: dbService.getRoomMessages(),
+//                stream: Firestore.instance.collection('Rooms').document(roomID).collection('Messages').orderBy("time").snapshots(),
                 builder: (context, snapshot) {
 
                   if (!snapshot.hasData) {
@@ -70,15 +71,15 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
                     );
                   } else {
                     return ListView.builder(
-                      reverse: true,
                       itemCount: snapshot.data.documents.length,
                       itemBuilder: (context, index) {
-                        return Message(
-                            text: snapshot.data.documents[index].data["text"],
-                            animationController: new AnimationController( // still need to do the animation
-                                vsync: this,
-                                duration: new Duration(milliseconds: 800))
-                        );
+//                        return Message(
+//                            text: snapshot.data.documents[index].data["text"],
+//                            animationController: new AnimationController( // still need to do the animation
+//                                vsync: this,
+//                                duration: new Duration(milliseconds: 800))
+//                        );
+                        return Text("${snapshot.data.documents[index].data["text"]}");
                       },
 
                     );
