@@ -74,8 +74,8 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                 stream: dbService.getQuestionMessages(widget.questionID),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    print("Snapshot connectionState: " +
-                        "${snapshot.connectionState}");
+//                    print("Snapshot connectionState: " +
+//                        "${snapshot.connectionState}");
 
                     return Center(
                       child: CircularProgressIndicator(),
@@ -86,6 +86,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                       itemBuilder: (context, index) {
                         return Message(
                           text: snapshot.data.documents[index].data["text"],
+                          sender: snapshot.data.documents[index].data["from"],
                         );
 
 //

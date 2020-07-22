@@ -37,7 +37,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 // print(snapshot.data.documents[index].data["text"]);
 
 //                return Text(snapshot.data.documents[index].data["text"]);
-                print(snapshot.data.documents[index].data["text"]);
+                // print(snapshot.data.documents[index].data["text"]);
                   // print(index);
                   return QuestionTile(
                     questionID: docSS.documentID,

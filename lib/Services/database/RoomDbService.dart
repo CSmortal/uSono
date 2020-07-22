@@ -45,7 +45,7 @@ class RoomDbService{ // manages the Rooms collection in the database, and thus a
   Future sendQuestion(String qn, String sender) async {
     try {
       CollectionReference questions = roomsCollection.document(roomID).collection("Questions");
-      print("roomID: " + "$roomID");
+      // print("roomID: " + "$roomID");
       await questions.add({
         "text": qn,
         "from": sender,
