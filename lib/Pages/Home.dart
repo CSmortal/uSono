@@ -48,17 +48,6 @@ class _HomeState extends State<Home> {
         .listen((Position position) {
       _position = position;
     });
-    // stream = radius.switchMap((rad) {
-    //   var collectionRef = _firestore.collection('Rooms');
-    //   print(_position.latitude);
-    //   print(_position.longitude);
-    //   return geo.collection(collectionRef: collectionRef).within(
-    //       center: geo.point(
-    //           latitude: _position.latitude, longitude: _position.longitude),
-    //       radius: 10000000,
-    //       field: 'position',
-    //       strictMode: false);
-    // });
   }
 
   void _showSettingsPanel() {
@@ -129,13 +118,6 @@ class _HomeState extends State<Home> {
     // final dbUserList = Provider.of<List<db_User>>(context);
     final fs = Firestore.instance;
     final user = Provider.of<User>(context);
-
-    // assert(dbUserList != null);
-
-    // find the name of the user, by finding the document whose documentID = user.uid, where user is the User object whose uid is the same as the FirebaseUser instance's uid property
-
-    //final userName = dbUserList.singleWhere((element) => element.user.uid == user.uid).name;
-//    querySS.documents.forEach((doc) => print(doc.documentID));
 
     return loading
         ? Loading()
@@ -224,12 +206,6 @@ class _HomeState extends State<Home> {
                   itemExtent: 500,
                   delegate: SliverChildListDelegate([
                     _roomList(),
-                    // _buildListWidget(
-                    //     Colors.teal[100], 'CS1010X Lecture Room', '123132'),
-                    // _buildListWidget(
-                    //     Colors.blue[100], 'CS2040C Lecture Chat', '1231244'),
-                    // _buildListWidget(
-                    //     Colors.teal[100], 'Random Seminar', '1235555'),
                   ])),
             ]),
           );

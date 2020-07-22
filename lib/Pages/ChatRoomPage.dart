@@ -11,25 +11,27 @@ class ChatRoomPage extends StatefulWidget {
   final String roomName;
   final String roomID;
 
-  ChatRoomPage(Map<String,String> map) : this.roomName = map["roomName"], this.roomID = map["roomID"];
+  ChatRoomPage(Map<String, String> map)
+      : this.roomName = map["roomName"],
+        this.roomID = map["roomID"];
 
   @override
   State createState() => new _ChatRoomPageState(roomName, roomID);
 }
 
-class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMixin {
-   final String roomName;
-   final String roomID;
-   final TextEditingController textController = TextEditingController();
+class _ChatRoomPageState extends State<ChatRoomPage>
+    with TickerProviderStateMixin {
+  final String roomName;
+  final String roomID;
+  final TextEditingController textController = TextEditingController();
 
-   _ChatRoomPageState(this.roomName, this.roomID);
+  _ChatRoomPageState(this.roomName, this.roomID);
 
 //  final List<Message> _messages = <Message>[];
 //  bool _isWriting = false;
 
   @override
   Widget build(BuildContext context) {
-
     RoomDbService dbService = RoomDbService(roomName, roomID);
     print("building ChatRoomPage()...");
     return new Scaffold(
@@ -39,55 +41,54 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
         //),
 
         body: new Column(
-          children: [
-            new Container(
-              color: Colors.red[200],
-              constraints: BoxConstraints.expand(width: 400.0, height: 100.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  roomName, // we need to change this to the chatroom name, by accessing firestore
-                  style: (TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w300,
-                  )),
-                ),
-              ),
+      children: [
+        new Container(
+          color: Colors.red[200],
+          constraints: BoxConstraints.expand(width: 400.0, height: 100.0),
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              roomName, // we need to change this to the chatroom name, by accessing firestore
+              style: (TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.w300,
+              )),
             ),
+          ),
+        ),
 
-            new Flexible(
-              flex: 8,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: dbService.getRoomMessages(),
+        new Flexible(
+          flex: 8,
+          child: StreamBuilder<QuerySnapshot>(
+            stream: dbService.getRoomMessages(),
 //                stream: Firestore.instance.collection('Rooms').document(roomID).collection('Messages').orderBy("time").snapshots(),
-                builder: (context, snapshot) {
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                print("Snapshot connectionState: " +
+                    "${snapshot.connectionState}");
 
-                  if (!snapshot.hasData) {
-                    print("Snapshot connectionState: " + "${snapshot.connectionState}");
-
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context, index) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index) {
 //                        return Message(
 //                            text: snapshot.data.documents[index].data["text"],
 //                            animationController: new AnimationController( // still need to do the animation
 //                                vsync: this,
 //                                duration: new Duration(milliseconds: 800))
 //                        );
-                        return Text("${snapshot.data.documents[index].data["text"]}");
-                      },
-
-                    );
-                  }
-
-                },
-              ),
-            ),
+                    return Text(
+                        "${snapshot.data.documents[index].data["text"]}");
+                  },
+                );
+              }
+            },
+          ),
+        ),
 
 //            new Flexible(
 //              // default fit is FlexFit.loose. Use flexible widgets if you want children widgets to change their size relative to the parent widget
@@ -100,28 +101,28 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
 //              ),
 //            ),
 
-            new Divider(height: 1),
+        new Divider(height: 1),
 
-            new Flexible(
-              // Input box
-              flex: 1,
-              child: _buildComposer(),
+        new Flexible(
+          // Input box
+          flex: 1,
+          child: _buildComposer(),
 //              decoration: new BoxDecoration(
 //                color: Theme.of(context).cardColor,
 //              ),
-            )
-          ],
+        )
+      ],
     ));
   }
 
   Widget _buildComposer() {
-
     final user = Provider.of<User>(context);
     String userName = '';
-    UserDbService(uid: user.uid).getNameFromUser().then((result) => userName = result);
+    UserDbService(uid: user.uid)
+        .getNameFromUser()
+        .then((result) => userName = result);
 
     RoomDbService dbService = RoomDbService(roomName, roomID);
-
 
     return new IconTheme(
       data: new IconThemeData(color: Theme.of(context).accentColor),
@@ -150,14 +151,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
                       hintText: "Enter some text to send a message"), // ???
                 ),
               ),
-
               new Container(
                   margin: new EdgeInsets.symmetric(horizontal: 3.0),
                   child: Theme.of(context).platform == TargetPlatform.iOS
                       ? new CupertinoButton(
                           child: new Text("Submit"),
                           onPressed: () {
-                            dbService.sendMessage(textController.text, userName);
+                            dbService.sendMessage(
+                                textController.text, userName);
                             _cleanUp();
 //                            if (_isWriting) {
 //
@@ -168,9 +169,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
                         )
                       : new IconButton(
                           icon: new Icon(Icons.message),
-
                           onPressed: () {
-                            dbService.sendMessage(textController.text, userName);
+                            dbService.sendMessage(
+                                textController.text, userName);
                             _cleanUp();
 //                            if (_isWriting) {
 //
@@ -216,5 +217,3 @@ class _ChatRoomPageState extends State<ChatRoomPage> with TickerProviderStateMix
     super.dispose();
   }
 }
-
-
