@@ -45,8 +45,8 @@ class _HomeState extends State<Home> {
   Widget _roomList() {
     return StreamBuilder(stream: radius.switchMap((rad) {
       var collectionRef = _firestore.collection('Rooms');
-      print(_position.latitude);
-      print(_position.longitude);
+      // print(_position.latitude);
+      // print(_position.longitude);
       return geo.collection(collectionRef: collectionRef).within(
           center: geo.point(
               latitude: _position.latitude, longitude: _position.longitude),

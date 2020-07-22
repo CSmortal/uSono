@@ -28,6 +28,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
 //   final String roomName;
 //   final String roomID;
   final TextEditingController textController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
 //   _ChatRoomPageState(this.roomName, this.roomID);
 
@@ -68,13 +69,13 @@ class _ChatRoomPageState extends State<ChatRoomPage>
 //            ),
 
             new Flexible(
-              flex: 8,
+              flex: 10,
               child: StreamBuilder<QuerySnapshot>(
                 stream: dbService.getQuestionMessages(widget.questionID),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    print("Snapshot connectionState: " +
-                        "${snapshot.connectionState}");
+//                    print("Snapshot connectionState: " +
+//                        "${snapshot.connectionState}");
 
                     return Center(
                       child: CircularProgressIndicator(),
@@ -85,11 +86,14 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                       itemBuilder: (context, index) {
                         return Message(
                           text: snapshot.data.documents[index].data["text"],
-//                            animationController: new AnimationController( // still need to do the animation
-//                                vsync: this,
-//                                duration: new Duration(milliseconds: 800))
+                          sender: snapshot.data.documents[index].data["from"],
                         );
+<<<<<<< HEAD
 //                        return Text("${snapshot.data.documents[index].data["text"]}");
+=======
+
+//
+>>>>>>> def42de8a55bc8c117704eb8bb08f03a21f20bc6
                       },
                     );
                   }
@@ -97,16 +101,6 @@ class _ChatRoomPageState extends State<ChatRoomPage>
               ),
             ),
 
-//            new Flexible(
-//              // default fit is FlexFit.loose. Use flexible widgets if you want children widgets to change their size relative to the parent widget
-//              child: new ListView.builder(
-//                itemBuilder: (_, int index) => _messages[
-//                    index], // each widget in the list is a Message from _messages
-//                itemCount: _messages.length,
-//                reverse: true,
-//                padding: new EdgeInsets.all(6),
-//              ),
-//            ),
 
             new Divider(height: 1),
 
@@ -114,9 +108,6 @@ class _ChatRoomPageState extends State<ChatRoomPage>
               // Input box
               flex: 1,
               child: _buildComposer(),
-//              decoration: new BoxDecoration(
-//                color: Theme.of(context).cardColor,
-//              ),
             )
           ],
         ));
@@ -138,60 +129,51 @@ class _ChatRoomPageState extends State<ChatRoomPage>
             return new Container(
                 // Input box
                 margin: const EdgeInsets.symmetric(horizontal: 9.0),
-                child: new Row(
-                  children: [
-                    new Flexible(
-                      child: new TextField(
-                        controller: textController,
-
-//                  onChanged: (String text) {
-//                    setState(() {
-//                      _isWriting = text.length > 0;
-//                      currentText = text;
-//                    });
-//                  },
-
-                        onSubmitted: (String msg) {
-                          dbService.sendMessage(
-                              msg, snapshot.data, widget.questionID);
-                          _cleanUp();
-                        },
-                        // submitting message will add the message in the database
-                        decoration: new InputDecoration.collapsed(
-                            hintText:
-                                "Enter some text to send a message"), // ???
+                child: Form(
+                  key: _formKey,
+                  child: new Row(
+                    children: [
+                      new Flexible(
+                        child: new TextFormField(
+                          controller: textController,
+                          validator: (val) => val.isEmpty ? "Your reply cannot be empty" : null,
+//                        onSubmitted: (String msg) {
+//                          dbService.sendMessage(
+//                              msg, snapshot.data, widget.questionID);
+//                          _cleanUp();
+//                        },
+                          // submitting message will add the message in the database
+                          decoration: new InputDecoration.collapsed(
+                              hintText:
+                                  "Enter some text to send a message"), // ???
+                        ),
                       ),
-                    ),
-                    new Container(
-                        margin: new EdgeInsets.symmetric(horizontal: 3.0),
-                        child: Theme.of(context).platform == TargetPlatform.iOS
-                            ? new CupertinoButton(
-                                child: new Text("Submit"),
-                                onPressed: () {
-                                  dbService.sendMessage(textController.text,
-                                      snapshot.data, widget.questionID);
-                                  _cleanUp();
-//                            if (_isWriting) {
-//
-//                            } else {
-//                              return null;
-//                            }
-                                },
-                              )
-                            : new IconButton(
-                                icon: new Icon(Icons.message),
-                                onPressed: () {
-                                  dbService.sendMessage(textController.text,
-                                      snapshot.data, widget.questionID);
-                                  _cleanUp();
-//                            if (_isWriting) {
-//
-//                            } else {
-//                              return null;
-//                            }
-                                },
-                              )),
-                  ],
+                      new Container(
+                          margin: new EdgeInsets.symmetric(horizontal: 3.0),
+                          child: Theme.of(context).platform == TargetPlatform.iOS
+                              ? new CupertinoButton(
+                                  child: new Text("Submit"),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      dbService.sendMessage(textController.text,
+                                          snapshot.data, widget.questionID);
+                                      _cleanUp();
+                                    }
+
+                                  },
+                                )
+                              : new IconButton(
+                                  icon: new Icon(Icons.message),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      dbService.sendMessage(textController.text,
+                                          snapshot.data, widget.questionID);
+                                      _cleanUp();
+                                    }
+                                  },
+                                )),
+                    ],
+                  ),
                 ),
                 decoration: Theme.of(context).platform == TargetPlatform.iOS
                     ? new BoxDecoration(

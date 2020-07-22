@@ -45,7 +45,7 @@ class RoomDbService{ // manages the Rooms collection in the database, and thus a
   Future sendQuestion(String qn, String sender) async {
     try {
       CollectionReference questions = roomsCollection.document(roomID).collection("Questions");
-      print("roomID: " + "$roomID");
+      // print("roomID: " + "$roomID");
       await questions.add({
         "text": qn,
         "from": sender,
@@ -63,9 +63,7 @@ class RoomDbService{ // manages the Rooms collection in the database, and thus a
     }
 
     Stream<QuerySnapshot> getRoomQuestions() {
-      //print(roomsCollection.document(roomID).documentID);
-      roomsCollection.document(roomID).collection('Questions').getDocuments().then((querySS) => print(querySS));
-      return roomsCollection.document(roomID).collection('Questions').orderBy("votes").snapshots();
+      return roomsCollection.document(roomID).collection('Questions').orderBy("time").snapshots(); // change to order by votes later
     }
 
 }
