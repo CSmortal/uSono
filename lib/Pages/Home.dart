@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
-import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Settings/AllSettingsPanel.dart';
-import 'package:orbital_2020_usono_my_ver/Settings/ChatRoomSettings.dart';
-import 'package:orbital_2020_usono_my_ver/Settings/QuestionSettings.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
-
-
+import 'package:geoflutterfire/geoflutterfire.dart';
+import 'dart:async';
+import 'package:rxdart/rxdart.dart';
 
 class Home extends StatefulWidget {
   //SelectionPage({Key key, @required this.alias}) : super(key: key);
@@ -26,23 +24,51 @@ class _HomeState extends State<Home> {
   final Firestore firestoreInstance = Firestore.instance;
   Position _location = Position(latitude: 0.0, longitude: 0.0);
   bool loading = false;
+  Position _position = Position(latitude: 0.0, longitude: 0.0);
+  StreamSubscription<Position> _positionStream;
+  Geoflutterfire geo = Geoflutterfire();
+  Firestore _firestore = Firestore.instance;
+  Stream<List<DocumentSnapshot>> stream;
+  var radius = BehaviorSubject<double>.seeded(1.0);
 
-
-
-
-
-  void _getCurrentLocation(var uid) async {
-    final location = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
-    setState(() {
-      _location = location;
+  @override
+  void initState() {
+    super.initState();
+    var locationOptions =
+        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 1);
+    _positionStream = Geolocator()
+        .getPositionStream(locationOptions)
+        .listen((Position position) {
+      _position = position;
     });
+  }
 
-    firestoreInstance
-        .collection("Users")
-        .document(uid)
-        .setData({"Coordinates": location});
+  Widget _roomList() {
+    return StreamBuilder(stream: radius.switchMap((rad) {
+      var collectionRef = _firestore.collection('Rooms');
+      print(_position.latitude);
+      print(_position.longitude);
+      return geo.collection(collectionRef: collectionRef).within(
+          center: geo.point(
+              latitude: _position.latitude, longitude: _position.longitude),
+          radius: 0.175,
+          field: 'position',
+          strictMode: false);
+    }), builder: (BuildContext context,
+        AsyncSnapshot<List<DocumentSnapshot>> snapshots) {
+      if (snapshots.hasError) return new Text('Error; ${snapshots.error}');
+      switch (snapshots.connectionState) {
+        case ConnectionState.waiting:
+          return new Text('Loading...');
+        default:
+          return new ListView(
+            children: snapshots.data.map((document) {
+              return _buildListWidget(Colors.blue[100],
+                  document.data['roomName'], document.documentID);
+            }).toList(),
+          );
+      }
+    });
   }
 
   Widget _buildListWidget(Color color, String roomName, String roomID) {
@@ -69,141 +95,88 @@ class _HomeState extends State<Home> {
             )));
   }
 
-  Widget _roomList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('Rooms').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) return new Text('Loading...');
-        return new ListView(
-          children: snapshot.data.documents.map((document) {
-            return _buildListWidget(
-                Colors.blue[100], document.data['roomName'], document.documentID);
-          }).toList(),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-
-    // final dbUserList = Provider.of<List<db_User>>(context);
-    final fs =  Firestore.instance;
+    final fs = Firestore.instance;
     final user = Provider.of<User>(context);
-
-
-    // assert(dbUserList != null);
-
-    // find the name of the user, by finding the document whose documentID = user.uid, where user is the User object whose uid is the same as the FirebaseUser instance's uid property
-
-    //final userName = dbUserList.singleWhere((element) => element.user.uid == user.uid).name;
-//    querySS.documents.forEach((doc) => print(doc.documentID));
-
-
-
-
     return loading
         ? Loading()
         : Scaffold(
-      backgroundColor: Colors.teal[200],
+            backgroundColor: Colors.teal[200],
+            body: CustomScrollView(slivers: <Widget>[
+              SliverAppBar(
+                leading: RaisedButton.icon(
+                  label: Text("Create Room"), // Overflow error
+                  icon: Icon(Icons.add),
 
-      body:
-      CustomScrollView(
-          slivers: <Widget> [
-            SliverAppBar(
-
-              leading: RaisedButton.icon(
-                label: Text("Create Room"), // Overflow error
-                icon: Icon(Icons.add),
-
-                onPressed: () => AllSettingsPanel().showSettingsPanel(context, SettingsPanel.chatRoom),
-
-              ),
-
-              expandedHeight: 200.0,
-              floating: true,
-              pinned: true,
-              backgroundColor: Colors.red[200],
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.black12,
-                        width: 1.0,
+                  onPressed: () => AllSettingsPanel()
+                      .showSettingsPanel(context, SettingsPanel.chatRoom),
+                ),
+                expandedHeight: 200.0,
+                floating: true,
+                pinned: true,
+                backgroundColor: Colors.red[200],
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.black12,
+                          width: 1.0,
+                        ),
                       ),
                     ),
                   ),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      new FutureBuilder(
+                          future:
+                              UserDbService(uid: user.uid).getNameFromUser(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return new Text(
+                                'Hello there, ${snapshot.data}',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          }),
+                      const Text(
+                        'These are the rooms around you\n\n\n',
+                        style: (TextStyle(
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w400)),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    new FutureBuilder(
-                      future: UserDbService(uid: user.uid).getNameFromUser(),
-                      builder: (context, snapshot) {
-
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return new Text('Hello there, ${snapshot.data}',
-                            style: TextStyle(fontSize: 20,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.left,
-                          );
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-
-                      }
-                    ),
-                    //new Text(alias, style:
-                    //  TextStyle(fontSize: 16,
-                    //      fontStyle: FontStyle.italic),
-                    //  textAlign: TextAlign.center,),
-                    const Text('These are the rooms around you\n\n\n',
-                      style:(TextStyle(fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w400
-                      )),
-                      textAlign: TextAlign.center,),
-                  ],
-                ),
+                actions: <Widget>[
+                  FlatButton(
+                    // Beautify later
+                    child: Text('Logout'),
+                    onPressed: () async {
+                      setState(() => loading = true);
+                      await _auth.signOut();
+                    },
+                    splashColor: Colors.white,
+                  ),
+                ],
               ),
-
-              actions: <Widget>[
-
-                FlatButton( // Beautify later
-                  child: Text('Logout'),
-                  onPressed: () async {
-
-                    setState(() => loading = true);
-                    await _auth.signOut();
-
-//                        if (result == null) {
-//                          setState(() => {
-//                            loading = false,
-//                            print("Failed to logout. Please wait...") // Might need to change later
-//                          });
-//                        }
-                  },
-                  splashColor: Colors.white,
-
-                ),
-
-              ],
-
-            ),
-            SliverFixedExtentList(
-                itemExtent: 500,
-                delegate: SliverChildListDelegate(
-                    [
-                      _roomList(),
-                    ]
-                )
-            ),]
-      ),
-    );
+              SliverFixedExtentList(
+                  itemExtent: 500,
+                  delegate: SliverChildListDelegate([
+                    _roomList(),
+                  ])),
+            ]),
+          );
   }
 }
-
-
