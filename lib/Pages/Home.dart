@@ -3,13 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
+import 'package:orbital_2020_usono_my_ver/Settings/AllSettingsPanel.dart';
 import 'package:orbital_2020_usono_my_ver/Settings/ChatRoomSettings.dart';
+import 'package:orbital_2020_usono_my_ver/Settings/QuestionSettings.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
-import 'package:orbital_2020_usono_my_ver/Models/db_User.dart';
+
 
 
 class Home extends StatefulWidget {
@@ -26,20 +28,8 @@ class _HomeState extends State<Home> {
   bool loading = false;
 
 
-//  Future retrieveUserName() async {
-//    userName = await UserDbService(uid: user.uid).getNameFromUser();
-//  }
 
-  void _showSettingsPanel() {
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-            child: ChatRoomSettingsForm(),
-          );
-        });
-  }
+
 
   void _getCurrentLocation(var uid) async {
     final location = await Geolocator()
@@ -68,7 +58,7 @@ class _HomeState extends State<Home> {
             color: color,
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
-                '/ChatRoomPage',
+                '/QuestionPage',
                 arguments: {
                   "roomName": roomName,
                   "roomID": roomID,
@@ -126,7 +116,7 @@ class _HomeState extends State<Home> {
                 label: Text("Create Room"), // Overflow error
                 icon: Icon(Icons.add),
 
-                onPressed: () => _showSettingsPanel(),
+                onPressed: () => AllSettingsPanel().showSettingsPanel(context, SettingsPanel.chatRoom),
 
               ),
 
@@ -208,9 +198,6 @@ class _HomeState extends State<Home> {
                 delegate: SliverChildListDelegate(
                     [
                       _roomList(),
-//                          _buildListWidget(Colors.teal[100], 'CS1010X Lecture Room'),
-//                          _buildListWidget(Colors.blue[100], 'CS2040C Lecture Chat'),
-//                          _buildListWidget(Colors.teal[100], 'Random Seminar'),
                     ]
                 )
             ),]

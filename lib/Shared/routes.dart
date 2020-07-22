@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orbital_2020_usono_my_ver/Pages/ChatRoomPage.dart';
+import 'package:orbital_2020_usono_my_ver/Pages/QuestionPage.dart';
 
 
 class RouteHandler{
@@ -8,12 +9,9 @@ class RouteHandler{
 
 
     switch(settings.name) {
-//      case '/':
-//        return MaterialPageRoute(builder: (_) => LoginPage());
-//      case '/SelectionPage':
-//        return MaterialPageRoute(builder: (_) => SelectionPage(args));
+      case '/QuestionPage':
+        return MaterialPageRoute(builder: (_) => QuestionPage(args));
 
-    // perhaps we could just use Navigator.pop(context) to return from the ChatRoomPage back to the Home() widget.
       case '/ChatRoomPage':
         return MaterialPageRoute(builder: (_) => ChatRoomPage(args));
     //MaterialPageRoute<T> replaces the entire screen with a platform

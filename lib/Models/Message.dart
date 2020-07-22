@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 class Message extends StatelessWidget {
   final String text;
 
-  final AnimationController animationController;
+//  final AnimationController animationController;
   static String defaultUserName = "You";
 
-  Message({this.text, this.animationController});
+  Message({this.text});
 
   @override
   Widget build(BuildContext context) {
-    return new SizeTransition( // SizeTransition wraps around the widget that it wants to animate, in this case Container.
-        sizeFactor: new CurvedAnimation(
-          parent: animationController,
-          curve: Curves.bounceOut, // affects animation of newly submitted messages popping out in the flexible widget
-        ),
-        axisAlignment: 0.0, // ??
-        child: new Container(
+//    return new SizeTransition( // SizeTransition wraps around the widget that it wants to animate, in this case Container.
+//        sizeFactor: new CurvedAnimation(
+//          parent: animationController,
+//          curve: Curves.bounceOut, // affects animation of newly submitted messages popping out in the flexible widget
+//        ),
+
+        return new Container(
             color: Colors.teal[100],
             margin: const EdgeInsets.symmetric(vertical: 8), // affects the vertical gap between messages in the ListView
             child: new Row(
@@ -41,7 +41,7 @@ class Message extends StatelessWidget {
                 ),
               ],
             )
-        )
-    );
+        );
+//    );
   }
 }

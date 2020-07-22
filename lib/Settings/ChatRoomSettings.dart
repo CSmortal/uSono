@@ -40,15 +40,9 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
 
                 String roomID = await _database.createChatRoom(_currentRoomName);
 
-                Navigator.pushNamed(context, '/ChatRoomPage', arguments: {"roomName": _currentRoomName, "roomID": roomID});
+                Navigator.pushNamed(context, '/QuestionPage', arguments: {"roomName": _currentRoomName, "roomID": roomID});
 
-//                if (result = null) { // need to do testing
-//                  print("if");
-//                } else {
-//                  print("else");
-//                }
-
-                // After creating the room, we want to enter the room, so use Navigator...
+//
               }
             },
           ),
