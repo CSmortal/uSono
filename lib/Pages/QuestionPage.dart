@@ -28,8 +28,8 @@ class _QuestionPageState extends State<QuestionPage> {
         } else if (snapshot.hasError) {
           return new Text("Error...");
         } else {
-          snapshot.data.documents.forEach((element) {print(element);});
-          print("length: " + "${snapshot.data.documents.length}");
+          // snapshot.data.documents.forEach((element) {print(element);});
+          // print("length: " + "${snapshot.data.documents.length}");
           return ListView.builder(
               itemCount: snapshot.data.documents.length,
               itemBuilder: (context, index) {
@@ -37,7 +37,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 // print(snapshot.data.documents[index].data["text"]);
 
 //                return Text(snapshot.data.documents[index].data["text"]);
-
+                print(snapshot.data.documents[index].data["text"]);
+                  // print(index);
                   return QuestionTile(
                     questionID: docSS.documentID,
                     text: docSS.data["text"],
