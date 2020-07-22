@@ -89,7 +89,6 @@ class _ChatRoomPageState extends State<ChatRoomPage>
 //                                vsync: this,
 //                                duration: new Duration(milliseconds: 800))
                         );
-
 //                        return Text("${snapshot.data.documents[index].data["text"]}");
                       },
                     );

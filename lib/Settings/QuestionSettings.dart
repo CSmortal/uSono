@@ -13,9 +13,9 @@ class QuestionSettingsForm extends StatefulWidget {
   QuestionSettingsForm(this.roomName, this.roomID);
 
   @override
-  _QuestionSettingsFormState createState() => _QuestionSettingsFormState(roomName, roomID);
+  _QuestionSettingsFormState createState() =>
+      _QuestionSettingsFormState(roomName, roomID);
 }
-
 
 class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
   final String roomName;
@@ -26,11 +26,9 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
 
   @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<User>(context);
     RoomDbService dbService = RoomDbService(roomName, roomID);
     final _formKey = GlobalKey<FormState>();
-
 
     return Form(
       key: _formKey,
@@ -40,11 +38,10 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
             //validator fill in later
             controller: _controller,
 
-            decoration: textInputDecoration.copyWith(hintText: "Type in the question you would like to ask"),
+            decoration: textInputDecoration.copyWith(
+                hintText: "Type in the question you would like to ask"),
           ),
-
           SizedBox(height: 15),
-
           RaisedButton(
             color: Colors.pink[400],
             child: Text(
@@ -53,12 +50,11 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
             ),
             onPressed: () async {
               // assert(roomID != null);
-              dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
+              dbService.sendQuestion(_controller.text,
+                  await UserDbService(uid: user.uid).getNameFromUser());
 
               // we need some way to retrieve the questionID of the added question.
             },
-
-
           ),
         ],
       ),

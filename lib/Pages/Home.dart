@@ -22,7 +22,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   final Firestore firestoreInstance = Firestore.instance;
-  Position _location = Position(latitude: 0.0, longitude: 0.0);
   bool loading = false;
   Position _position = Position(latitude: 0.0, longitude: 0.0);
   StreamSubscription<Position> _positionStream;
@@ -164,6 +163,8 @@ class _HomeState extends State<Home> {
                     // Beautify later
                     child: Text('Logout'),
                     onPressed: () async {
+                      // print(_position.latitude);
+                      // print(_position.longitude);
                       setState(() => loading = true);
                       await _auth.signOut();
                     },
