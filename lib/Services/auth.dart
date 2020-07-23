@@ -4,14 +4,15 @@ import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 
 class AuthService {
+ 
   final FirebaseAuth _auth = FirebaseAuth
       .instance; // via this object, we call different Firebase_Auth methods
+  
 
   // Anonymously signing in
   Future signInAnon() async {
     try {
       AuthResult result = await _auth.signInAnonymously();
-      print("signing in");
       FirebaseUser user = result.user;
       return _userFromFirebaseUser(user);
     } catch (e) {
@@ -63,13 +64,15 @@ class AuthService {
 
   // sign out
   Future signOut() async {
-    try {
-      return await _auth
-          .signOut(); // _auth.signOut is the signOut() method in the FirebaseAuth library
-    } catch (e) {
-      print(e.toString());
-      return null;
+
+
+    FirebaseUser user = await _auth.currentUser();
+    if (user.email == null) {
+        user.delete();
+    } else {
+        return await _auth.signOut();
     }
+
   }
 }
 
