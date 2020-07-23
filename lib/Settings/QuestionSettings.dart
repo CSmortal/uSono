@@ -59,6 +59,7 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
 
               if (_formKey.currentState.validate()) {
                 dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
+                _controller.clear();
                 Navigator.pop(context);
               }
 //              dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
