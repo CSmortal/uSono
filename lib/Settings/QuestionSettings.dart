@@ -55,12 +55,6 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
             ),
             onPressed: () async {
 
-              // assert(roomID != null);
-              dbService.sendQuestion(_controller.text,
-                  await UserDbService(uid: user.uid).getNameFromUser());
-
-              // we need some way to retrieve the questionID of the added question.
-
               if (_formKey.currentState.validate()) {
                 dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
                 Navigator.pop(context);
