@@ -163,10 +163,10 @@ class _HomeState extends State<Home> {
                     // Beautify later
                     child: Text('Logout'),
                     onPressed: () async {
-                      // print(_position.latitude);
-                      // print(_position.longitude);
-                      setState(() => loading = true);
-                      await _auth.signOut();
+                      print(_position.latitude);
+                      print(_position.longitude);
+                      // setState(() => loading = true);
+                      // await _auth.signOut();
                     },
                     splashColor: Colors.white,
                   ),

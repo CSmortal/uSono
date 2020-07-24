@@ -30,7 +30,6 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
     final user = Provider.of<User>(context);
     RoomDbService dbService = RoomDbService(roomName, roomID);
 
-
     return Form(
       key: _formKey,
       child: Column(
@@ -38,14 +37,9 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
           TextFormField(
             //validator fill in later
             controller: _controller,
-<<<<<<< HEAD
-
+            validator: (val) => val.length < 6 ? "Question is too short" : null,
             decoration: textInputDecoration.copyWith(
                 hintText: "Type in the question you would like to ask"),
-=======
-            validator: (val) => val.length < 6 ? "Question is too short" : null,
-            decoration: textInputDecoration.copyWith(hintText: "Type in the question you would like to ask"),
->>>>>>> def42de8a55bc8c117704eb8bb08f03a21f20bc6
           ),
           SizedBox(height: 15),
           RaisedButton(
@@ -55,20 +49,13 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () async {
-<<<<<<< HEAD
-              // assert(roomID != null);
-              dbService.sendQuestion(_controller.text,
-                  await UserDbService(uid: user.uid).getNameFromUser());
-
-              // we need some way to retrieve the questionID of the added question.
-=======
               if (_formKey.currentState.validate()) {
-                dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
+                dbService.sendQuestion(_controller.text,
+                    await UserDbService(uid: user.uid).getNameFromUser());
                 Navigator.pop(context);
               }
 //              dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
 //              Navigator.pop(context);
->>>>>>> def42de8a55bc8c117704eb8bb08f03a21f20bc6
             },
           ),
         ],

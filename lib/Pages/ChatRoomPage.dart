@@ -88,19 +88,12 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                           text: snapshot.data.documents[index].data["text"],
                           sender: snapshot.data.documents[index].data["from"],
                         );
-<<<<<<< HEAD
-//                        return Text("${snapshot.data.documents[index].data["text"]}");
-=======
-
-//
->>>>>>> def42de8a55bc8c117704eb8bb08f03a21f20bc6
                       },
                     );
                   }
                 },
               ),
             ),
-
 
             new Divider(height: 1),
 
@@ -136,7 +129,8 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                       new Flexible(
                         child: new TextFormField(
                           controller: textController,
-                          validator: (val) => val.isEmpty ? "Your reply cannot be empty" : null,
+                          validator: (val) =>
+                              val.isEmpty ? "Your reply cannot be empty" : null,
 //                        onSubmitted: (String msg) {
 //                          dbService.sendMessage(
 //                              msg, snapshot.data, widget.questionID);
@@ -150,28 +144,32 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                       ),
                       new Container(
                           margin: new EdgeInsets.symmetric(horizontal: 3.0),
-                          child: Theme.of(context).platform == TargetPlatform.iOS
-                              ? new CupertinoButton(
-                                  child: new Text("Submit"),
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()) {
-                                      dbService.sendMessage(textController.text,
-                                          snapshot.data, widget.questionID);
-                                      _cleanUp();
-                                    }
-
-                                  },
-                                )
-                              : new IconButton(
-                                  icon: new Icon(Icons.message),
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()) {
-                                      dbService.sendMessage(textController.text,
-                                          snapshot.data, widget.questionID);
-                                      _cleanUp();
-                                    }
-                                  },
-                                )),
+                          child:
+                              Theme.of(context).platform == TargetPlatform.iOS
+                                  ? new CupertinoButton(
+                                      child: new Text("Submit"),
+                                      onPressed: () {
+                                        if (_formKey.currentState.validate()) {
+                                          dbService.sendMessage(
+                                              textController.text,
+                                              snapshot.data,
+                                              widget.questionID);
+                                          _cleanUp();
+                                        }
+                                      },
+                                    )
+                                  : new IconButton(
+                                      icon: new Icon(Icons.message),
+                                      onPressed: () {
+                                        if (_formKey.currentState.validate()) {
+                                          dbService.sendMessage(
+                                              textController.text,
+                                              snapshot.data,
+                                              widget.questionID);
+                                          _cleanUp();
+                                        }
+                                      },
+                                    )),
                     ],
                   ),
                 ),
