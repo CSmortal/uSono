@@ -29,6 +29,7 @@ class _HomeState extends State<Home> {
   Firestore _firestore = Firestore.instance;
   Stream<List<DocumentSnapshot>> stream;
   var radius = BehaviorSubject<double>.seeded(1.0);
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -42,7 +43,15 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Widget _roomList() {
+  Future<Null> refreshList() async {
+    refreshKey.currentState?.show(atTop: false);
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      _roomList(_position);
+    });
+  }
+
+  Widget _roomList(var _position) {
     return StreamBuilder(stream: radius.switchMap((rad) {
       var collectionRef = _firestore.collection('Rooms');
       // print(_position.latitude);
@@ -50,7 +59,7 @@ class _HomeState extends State<Home> {
       return geo.collection(collectionRef: collectionRef).within(
           center: geo.point(
               latitude: _position.latitude, longitude: _position.longitude),
-          radius: 0.175,
+          radius: 0.050,
           field: 'position',
           strictMode: false);
     }), builder: (BuildContext context,
@@ -70,6 +79,24 @@ class _HomeState extends State<Home> {
     });
   }
 
+  // _checkDist(var startLatitude, var startLongitude, var roomID) async {
+  //   double _roomLat;
+  //   double _roomLng;
+
+  //   DocumentSnapshot docSS =
+  //       await Firestore.instance.collection("Rooms").document(roomID).get();
+  //   _roomLat = docSS.data["Latitude"];
+  //   _roomLng = docSS.data["Longitude"];
+
+  //   print("Lat: $_roomLat");
+  //   print("Lng: $_roomLng");
+
+  //   double distanceInMeters = await Geolocator()
+  //       .distanceBetween(startLatitude, startLongitude, _roomLat, _roomLng);
+
+  //   print("Dist: $distanceInMeters");
+  // }
+
   Widget _buildListWidget(Color color, String roomName, String roomID) {
     return Container(
         height: 150,
@@ -82,13 +109,37 @@ class _HomeState extends State<Home> {
             margin: EdgeInsets.all(10),
             color: color,
             child: GestureDetector(
-              onTap: () => Navigator.of(context).pushNamed(
-                '/QuestionPage',
-                arguments: {
-                  "roomName": roomName,
-                  "roomID": roomID,
-                },
-              ),
+              onTap: () async {
+                DocumentSnapshot docSS = await Firestore.instance
+                    .collection("Rooms")
+                    .document(roomID)
+                    .get();
+                double _roomLat = docSS.data["Latitude"];
+                double _roomLng = docSS.data["Longitude"];
+
+                print("Lat: $_roomLat");
+                print("Lng: $_roomLng");
+
+                double distanceInMeters = await Geolocator().distanceBetween(
+                    _position.latitude,
+                    _position.longitude,
+                    _roomLat,
+                    _roomLng);
+
+                print("Dist: $distanceInMeters");
+                if (distanceInMeters <= 50.0) {
+                  Navigator.of(context).pushNamed(
+                    '/QuestionPage',
+                    arguments: {
+                      "roomName": roomName,
+                      "roomID": roomID,
+                    },
+                  );
+                } else if (distanceInMeters > 50.0) {
+                  print("You've too far away from this room!");
+                  refreshList();
+                }
+              },
               child: Text('\n  $roomName',
                   style: TextStyle(color: Colors.white, fontSize: 25)),
             )));
@@ -165,6 +216,7 @@ class _HomeState extends State<Home> {
                     onPressed: () async {
                       print(_position.latitude);
                       print(_position.longitude);
+                      refreshList();
                       // setState(() => loading = true);
                       // await _auth.signOut();
                     },
@@ -175,7 +227,7 @@ class _HomeState extends State<Home> {
               SliverFixedExtentList(
                   itemExtent: 500,
                   delegate: SliverChildListDelegate([
-                    _roomList(),
+                    _roomList(_position),
                   ])),
             ]),
           );

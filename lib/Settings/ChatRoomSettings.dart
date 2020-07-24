@@ -32,6 +32,14 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
         .collection('Rooms')
         .document(roomid)
         .setData({'position': roomLocation.data}, merge: true);
+    Firestore.instance
+        .collection('Rooms')
+        .document(roomid)
+        .setData({'Latitude': _location.latitude}, merge: true);
+    Firestore.instance
+        .collection('Rooms')
+        .document(roomid)
+        .setData({'Longitude': _location.longitude}, merge: true);
   }
 
   @override
