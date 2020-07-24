@@ -63,7 +63,7 @@ class RoomDbService{ // manages the Rooms collection in the database, and thus a
     }
 
     Stream<QuerySnapshot> getRoomQuestions() {
-      return roomsCollection.document(roomID).collection('Questions').orderBy("time").snapshots(); // change to order by votes later
+      return roomsCollection.document(roomID).collection('Questions').orderBy("votes").snapshots(); // change to order by votes later
     }
 
 }
