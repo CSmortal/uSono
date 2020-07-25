@@ -30,7 +30,6 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
     final user = Provider.of<User>(context);
     RoomDbService dbService = RoomDbService(roomName, roomID);
 
-
     return Form(
       key: _formKey,
       child: Column(
@@ -39,12 +38,10 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
             //validator fill in later
             controller: _controller,
 
-
             decoration: textInputDecoration.copyWith(
                 hintText: "Type in the question you would like to ask"),
 
             validator: (val) => val.length < 6 ? "Question is too short" : null,
-
           ),
           SizedBox(height: 15),
           RaisedButton(
@@ -54,17 +51,16 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () async {
-
               // we need some way to retrieve the questionID of the added question.
 
               if (_formKey.currentState.validate()) {
-                dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
+                dbService.sendQuestion(_controller.text,
+                    await UserDbService(uid: user.uid).getNameFromUser());
                 _controller.clear();
                 Navigator.pop(context);
               }
 //              dbService.sendQuestion(_controller.text, await UserDbService(uid: user.uid).getNameFromUser());
 //              Navigator.pop(context);
-
             },
           ),
         ],
