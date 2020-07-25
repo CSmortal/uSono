@@ -87,6 +87,8 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                         return Message(
                           text: snapshot.data.documents[index].data["text"],
                           sender: snapshot.data.documents[index].data["from"],
+                          id: snapshot.data.documents[index].documentID
+                              .toString(),
                         );
                       },
                     );

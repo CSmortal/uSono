@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
-class Message extends StatelessWidget {
+class Message extends StatefulWidget {
   final String text;
   final String sender;
+  final String id;
 
+  Message({this.text, this.sender, this.id});
+  @override
+  _MessageState createState() => _MessageState();
+}
+
+class _MessageState extends State<Message> {
 //  final AnimationController animationController;
 //  static String defaultUserName = "You";
-
-  Message({this.text, this.sender});
+  bool bookmarked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,42 +38,73 @@ class Message extends StatelessWidget {
         child: FutureBuilder<String>(
             future: UserDbService(uid: user.uid).getNameFromUser(),
             builder: (context, snapshot) {
-
               if (!snapshot.hasData) {
                 return Container();
               } else {
                 String userName = snapshot.data;
-
-                userName == sender ? displayName = "You" : displayName = sender;
+                userName == widget.sender
+                    ? displayName = "You"
+                    : displayName = widget.sender;
 
                 return new Row(
                   crossAxisAlignment: CrossAxisAlignment.start, // ??
                   children: [
                     new Container(
-                      margin: const EdgeInsets.only(right: 18), // gap between Icon and the text
+                      margin: const EdgeInsets.only(
+                          right: 18), // gap between Icon and the text
 
                       child: new CircleAvatar(child: new Text(displayName[0])),
                     ),
-
                     new Expanded(
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            new Text(displayName, style: Theme.of(context).textTheme.subtitle1),
-                            new Container(
-                              margin: const EdgeInsets.only(top: 6),
-                              child: new Text(text),
-                            )
-                          ],
-                        )
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          new Text(displayName,
+                              style: Theme.of(context).textTheme.subtitle1),
+                          new Container(
+                            margin: const EdgeInsets.only(top: 6),
+                            child: new Text(widget.text),
+                          )
+                        ],
+                      ),
+                    ),
+                    new InkWell(
+                      onTap: () async {
+                        CollectionReference archivedCollection =
+                            Firestore.instance.collection("Users");
+                        CollectionReference messages = archivedCollection
+                            .document(user.uid)
+                            .collection("Archived Messages");
+                        setState(() {
+                          bookmarked = !bookmarked;
+                        });
+                        print(bookmarked);
+                        if (bookmarked == true) {
+                          await messages.document(widget.id).setData({
+                            "text": widget.text,
+                            "from": widget.sender,
+                          });
+                        } else if (bookmarked == false) {
+                          await messages.document(widget.id).delete();
+                        }
+                      },
+                      child: Container(
+                          height: 30,
+                          width: 30,
+                          alignment: Alignment.centerRight,
+                          decoration: BoxDecoration(color: Colors.teal[100]),
+                          child: Icon(
+                              bookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              color: (bookmarked == true)
+                                  ? Colors.red[200]
+                                  : null)),
                     ),
                   ],
                 );
               }
-
-            }
-        )
-    );
+            }));
 //    );
   }
 }

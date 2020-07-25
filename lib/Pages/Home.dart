@@ -79,24 +79,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-  // _checkDist(var startLatitude, var startLongitude, var roomID) async {
-  //   double _roomLat;
-  //   double _roomLng;
-
-  //   DocumentSnapshot docSS =
-  //       await Firestore.instance.collection("Rooms").document(roomID).get();
-  //   _roomLat = docSS.data["Latitude"];
-  //   _roomLng = docSS.data["Longitude"];
-
-  //   print("Lat: $_roomLat");
-  //   print("Lng: $_roomLng");
-
-  //   double distanceInMeters = await Geolocator()
-  //       .distanceBetween(startLatitude, startLongitude, _roomLat, _roomLng);
-
-  //   print("Dist: $distanceInMeters");
-  // }
-
   Widget _buildListWidget(Color color, String roomName, String roomID) {
     return Container(
         height: 150,
@@ -147,7 +129,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final fs = Firestore.instance;
+    // final fs = Firestore.instance;
     final user = Provider.of<User>(context);
     return loading
         ? Loading()
@@ -155,13 +137,6 @@ class _HomeState extends State<Home> {
             backgroundColor: Colors.teal[200],
             body: CustomScrollView(slivers: <Widget>[
               SliverAppBar(
-                leading: RaisedButton.icon(
-                  label: Text("Create Room"), // Overflow error
-                  icon: Icon(Icons.add),
-
-                  onPressed: () => AllSettingsPanel()
-                      .showSettingsPanel(context, SettingsPanel.chatRoom),
-                ),
                 expandedHeight: 200.0,
                 floating: true,
                 pinned: true,
@@ -172,7 +147,7 @@ class _HomeState extends State<Home> {
                       border: Border(
                         top: BorderSide(
                           color: Colors.black12,
-                          width: 1.0,
+                          width: 2.0,
                         ),
                       ),
                     ),
@@ -180,7 +155,7 @@ class _HomeState extends State<Home> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       new FutureBuilder(
                           future:
@@ -189,7 +164,7 @@ class _HomeState extends State<Home> {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               return new Text(
-                                'Hello there, ${snapshot.data}',
+                                'Hello there,\n${snapshot.data}',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.left,
@@ -209,26 +184,56 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-                actions: <Widget>[
-                  FlatButton(
-                    // Beautify later
-                    child: Text('Logout'),
-                    onPressed: () async {
-                      print(_position.latitude);
-                      print(_position.longitude);
-                      refreshList();
-                      // setState(() => loading = true);
-                      // await _auth.signOut();
-                    },
-                    splashColor: Colors.white,
-                  ),
-                ],
               ),
               SliverFixedExtentList(
                   itemExtent: 500,
                   delegate: SliverChildListDelegate([
                     _roomList(_position),
                   ])),
+            ]),
+            bottomNavigationBar: Row(children: <Widget>[
+              InkWell(
+                  onTap: () async {
+                    setState(() => loading = true);
+                    await _auth.signOut();
+                  },
+                  child: Container(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width / 4,
+                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    child: Icon(Icons.arrow_back),
+                  )),
+              InkWell(
+                  onTap: () => AllSettingsPanel()
+                      .showSettingsPanel(context, SettingsPanel.chatRoom),
+                  child: Container(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width / 4,
+                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    // Get a better icon legit
+                    child: Icon(Icons.add_box),
+                  )),
+              InkWell(
+                  onTap: () async {
+                    refreshList();
+                  },
+                  child: Container(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width / 4,
+                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    // Get a better icon legit
+                    child: Icon(Icons.refresh),
+                  )),
+              InkWell(
+                  onTap: () => AllSettingsPanel()
+                      .showSettingsPanel(context, SettingsPanel.chatRoom),
+                  child: Container(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width / 4,
+                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    // Get a better icon legit
+                    child: Icon(Icons.bookmark),
+                  )),
             ]),
           );
   }
