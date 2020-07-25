@@ -24,7 +24,7 @@ class Message extends StatelessWidget {
     String displayName;
 
     return new Container(
-        color: Colors.teal[100],
+        // color: Colors.teal[100],
         margin: const EdgeInsets.symmetric(vertical: 8),
         // affects the vertical gap between messages in the ListView
         child: FutureBuilder<String>(
@@ -38,28 +38,33 @@ class Message extends StatelessWidget {
 
                 userName == sender ? displayName = "You" : displayName = sender;
 
-                return new Row(
-                  crossAxisAlignment: CrossAxisAlignment.start, // ??
-                  children: [
-                    new Container(
-                      margin: const EdgeInsets.only(right: 18), // gap between Icon and the text
+                return Card(
+                  elevation: 5,
+                  child: new Row(
+                    // crossAxisAlignment: CrossAxisAlignment.start, // ??
+                    children: [
 
-                      child: new CircleAvatar(child: new Text(displayName[0])),
-                    ),
 
-                    new Expanded(
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            new Text(displayName, style: Theme.of(context).textTheme.subtitle1),
-                            new Container(
-                              margin: const EdgeInsets.only(top: 6),
-                              child: new Text(text),
-                            )
-                          ],
-                        )
-                    ),
-                  ],
+                      new Container(
+                        margin: const EdgeInsets.only(right: 18), // gap between Icon and the text
+
+                        child: new CircleAvatar(child: new Text(displayName[0])),
+                      ),
+
+                      new Expanded(
+                          child: new Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              new Text(displayName, style: Theme.of(context).textTheme.subtitle1),
+                              new Container(
+                                margin: const EdgeInsets.only(top: 6),
+                                child: new Text(text),
+                              )
+                            ],
+                          )
+                      ),
+                    ],
+                  ),
                 );
               }
 
