@@ -80,7 +80,7 @@ class _QuestionPageState extends State<QuestionPage> {
       body: CustomScrollView(
         slivers: <Widget>[
           SliverFixedExtentList(
-            itemExtent: 500,
+            itemExtent: 600,
             delegate: SliverChildListDelegate([_questionList()]),
           ),
         ],
