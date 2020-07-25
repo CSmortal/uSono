@@ -225,8 +225,9 @@ class _HomeState extends State<Home> {
                     child: Icon(Icons.refresh),
                   )),
               InkWell(
-                  onTap: () => AllSettingsPanel()
-                      .showSettingsPanel(context, SettingsPanel.chatRoom),
+                  onTap: () => Navigator.of(context).pushNamed(
+                        '/ArchivedPage',
+                      ),
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width / 4,
