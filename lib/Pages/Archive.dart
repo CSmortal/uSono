@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:hexcolor/hexcolor.dart';
 import 'package:orbital_2020_usono_my_ver/Models/Message.dart';
 
 class Archive extends StatefulWidget {
@@ -21,7 +21,7 @@ class _ArchiveState extends State<Archive> {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Archived Messages"),
-          backgroundColor: Colors.red[200],
+          backgroundColor: Hexcolor('#A38FA3'),
           elevation: 20,
           leading: FlatButton(
             child: Icon(Icons.arrow_back_ios),
