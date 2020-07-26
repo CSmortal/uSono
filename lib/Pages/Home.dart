@@ -44,8 +44,11 @@ class _HomeState extends State<Home> {
   }
 
   Future<Null> refreshList() async {
-    refreshKey.currentState?.show(atTop: false);
-    await Future.delayed(Duration(seconds: 2));
+    // refreshKey.currentState?.show(atTop: true);
+    // setState(() => loading = true);
+    await Future.delayed(Duration(seconds: 0));
+    print(_position.latitude);
+    print(_position.longitude);
     setState(() {
       _roomList(_position);
     });
@@ -67,7 +70,7 @@ class _HomeState extends State<Home> {
       if (snapshots.hasError) return new Text('Error; ${snapshots.error}');
       switch (snapshots.connectionState) {
         case ConnectionState.waiting:
-          return new Text('Loading...');
+          return new Text('', style: TextStyle(fontSize: 30.0));
         default:
           return new ListView(
             children: snapshots.data.map((document) {

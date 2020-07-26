@@ -5,7 +5,6 @@ import 'package:orbital_2020_usono_my_ver/Pages/AnonSignIn.dart';
 import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
 
-
 class SignIn extends StatefulWidget {
   final Function toggleView;
   SignIn({this.toggleView});
@@ -35,118 +34,135 @@ class _SignInState extends State<SignIn> {
             : Theme(
                 data: new ThemeData(
                   brightness: Brightness.light,
-                  primarySwatch: Colors.teal,
+                  primaryColor: Colors.brown[400],
                   inputDecorationTheme: new InputDecorationTheme(
                     labelStyle: new TextStyle(
-                      fontSize: 20,
+                      fontSize: 100,
                     ),
                   ),
                 ),
                 child: Scaffold(
-                  resizeToAvoidBottomInset: false, // Lazy way of avoiding bottom overflow when keyboard appears
+                  backgroundColor: Colors.white,
+                  resizeToAvoidBottomInset:
+                      false, // Lazy way of avoiding bottom overflow when keyboard appears
                   // 2nd solution: https://medium.com/zipper-studios/the-keyboard-causes-the-bottom-overflowed-error-5da150a1c660
-//                  backgroundColor: Colors.brown[100],
-                  appBar: AppBar(
-                    // leading: Container(width: 36, color: Colors.red),
-//                    backgroundColor: Colors.brown[400],
-                    elevation: 20.0,
-                    title: Center(
-                      child: Text("uSono"),
-                    ),
-                    actions: [
-                      FlatButton.icon(
-                          icon: Icon(Icons.person),
-                          label: Text('Register'),
-                          onPressed: () {
-                            widget
-                                .toggleView(); // widget is a property of the State class, that returns the corresponding StatefulWidget instance, in this case an instance of SignIn
-                          })
-                    ],
-
-                    centerTitle: true,
-                  ),
-
                   body: Column(
-                    children: [
-                      // Padding(padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0)),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                          margin:
+                              const EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
+                          height: 350.0,
+                          width: 375.0,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                            'images/ivox_logo3.PNG',
+                          )))),
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.0, horizontal: 50.0)),
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.0, horizontal: 50.0),
                           child: Form(
-                              key: _formKey,
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 20),
-                                  TextFormField(
-                                      decoration: textInputDecoration.copyWith(
-                                          hintText: 'Email'),
-                                      validator: (val) =>
-                                      val.isEmpty ? 'Enter an email' : null,
-                                      onChanged: (val) {
-                                        setState(() => email = val);
-                                      }),
-                                  SizedBox(height: 20),
-                                  TextFormField(
-                                      decoration: textInputDecoration.copyWith(
-                                          hintText: 'Password'),
-                                      obscureText: true,
-                                      validator: (val) => val.length < 6
-                                          ? 'Enter a password 6+ chars long'
-                                          : null,
-                                      onChanged: (val) {
-                                        setState(() => password = val);
-                                      }),
-                                  SizedBox(height: 20),
-                                  Column(children: [
-                                    RaisedButton(
-                                        color: Colors.pink[400],
-                                        child: Text('Sign In',
-                                            style: TextStyle(color: Colors.white)),
-                                        onPressed: () async {
-                                          if (_formKey.currentState.validate()) {
-                                            // validates form based on form's state, using the validator properties in each FormField
-                                            setState(() {
-                                              // show loading widget if form is valid
-                                              loading = true;
-                                            });
-
-                                            // entire Form is valid if all validators return null
-                                            dynamic result =
-                                            await _auth.signInWithEmailAndPassword(
-                                                email, password);
-
-                                            if (result == null) {
-                                              print("No record of this user");
-                                              setState(() {
-                                                error =
-                                                'COULD NOT SIGN IN WITH THOSE CREDENTIALS';
-                                                loading =
-                                                false; // no longer display loading widget if ...
-                                              });
-                                            }
-                                          }
-                                        }),
-                                    SizedBox(height: 12),
-                                    RaisedButton(
-                                        color: Colors.pink[400],
-                                        child: Text('Guest Sign In',
-                                            style: TextStyle(color: Colors.white)),
-                                        onPressed: () {
-                                          setState(() {
-                                            anon = true;
-                                          });
-                                        }),
-                                  ]),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    error,
-                                    style: TextStyle(color: Colors.red, fontSize: 14),
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                // SizedBox(height: 0.0),
+                                TextFormField(
+                                    decoration: textInputDecoration.copyWith(
+                                        hintText: 'Email',
+                                        hintStyle: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.grey)),
+                                    validator: (val) =>
+                                        val.isEmpty ? 'Enter an email' : null,
+                                    onChanged: (val) {
+                                      setState(() => email = val);
+                                    }),
+                                SizedBox(height: 5.0),
+                                TextFormField(
+                                    decoration: textInputDecoration.copyWith(
+                                        hintText: 'Password',
+                                        hintStyle: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.grey)),
+                                    obscureText: true,
+                                    validator: (val) => val.length < 6
+                                        ? 'Enter a password 6+ chars long'
+                                        : null,
+                                    onChanged: (val) {
+                                      setState(() => password = val);
+                                    }),
+                                FlatButton.icon(
+                                  onPressed: widget.toggleView,
+                                  icon: Icon(Icons.person_add),
+                                  label: Text(
+                                    'No account? Register here!',
+                                    style: TextStyle(
+                                        color: Colors.black45,
+                                        fontWeight: FontWeight.w400),
                                   ),
-                                ],
-                              ),
+                                ),
+                                SizedBox(height: 10),
+                                Column(children: [
+                                  RaisedButton(
+                                      color: Colors.grey[200],
+                                      child: Text('Sign In',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black54)),
+                                      onPressed: () async {
+                                        if (_formKey.currentState.validate()) {
+                                          // validates form based on form's state, using the validator properties in each FormField
+                                          setState(() {
+                                            // show loading widget if form is valid
+                                            loading = true;
+                                          });
+
+                                          // entire Form is valid if all validators return null
+                                          dynamic result = await _auth
+                                              .signInWithEmailAndPassword(
+                                                  email, password);
+
+                                          if (result == null) {
+                                            print("No record of this user");
+                                            setState(() {
+                                              error =
+                                                  'COULD NOT SIGN IN WITH THOSE CREDENTIALS';
+                                              loading =
+                                                  false; // no longer display loading widget if ...
+                                            });
+                                          }
+                                        }
+                                      }),
+                                  SizedBox(height: 12),
+                                  RaisedButton(
+                                      color: Colors.grey[200],
+                                      child: Text('Guest Sign In',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black54)),
+                                      onPressed: () {
+                                        setState(() {
+                                          anon = true;
+                                        });
+                                      }),
+                                ]),
+                                SizedBox(height: 12),
+                                Text(
+                                  error,
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 14),
+                                ),
+                              ],
                             ),
+                          ),
                         ),
-                        ),
+                      ),
                     ],
                   ),
                 ),
