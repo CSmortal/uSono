@@ -11,6 +11,7 @@ import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class Home extends StatefulWidget {
   //SelectionPage({Key key, @required this.alias}) : super(key: key);
@@ -44,8 +45,11 @@ class _HomeState extends State<Home> {
   }
 
   Future<Null> refreshList() async {
-    refreshKey.currentState?.show(atTop: false);
-    await Future.delayed(Duration(seconds: 2));
+    // refreshKey.currentState?.show(atTop: true);
+    // setState(() => loading = true);
+    await Future.delayed(Duration(seconds: 0));
+    print(_position.latitude);
+    print(_position.longitude);
     setState(() {
       _roomList(_position);
     });
@@ -67,11 +71,11 @@ class _HomeState extends State<Home> {
       if (snapshots.hasError) return new Text('Error; ${snapshots.error}');
       switch (snapshots.connectionState) {
         case ConnectionState.waiting:
-          return new Text('Loading...');
+          return new Text('', style: TextStyle(fontSize: 30.0));
         default:
           return new ListView(
             children: snapshots.data.map((document) {
-              return _buildListWidget(Colors.blue[100],
+              return _buildListWidget(Colors.grey[200],
                   document.data['roomName'], document.documentID);
             }).toList(),
           );
@@ -81,7 +85,7 @@ class _HomeState extends State<Home> {
 
   Widget _buildListWidget(Color color, String roomName, String roomID) {
     return Container(
-        height: 150,
+        height: 120,
         child: Card(
             semanticContainer: true,
             shape: RoundedRectangleBorder(
@@ -123,7 +127,7 @@ class _HomeState extends State<Home> {
                 }
               },
               child: Text('\n  $roomName',
-                  style: TextStyle(color: Colors.white, fontSize: 25)),
+                  style: TextStyle(color: Colors.black54, fontSize: 25)),
             )));
   }
 
@@ -134,13 +138,16 @@ class _HomeState extends State<Home> {
     return loading
         ? Loading()
         : Scaffold(
-            backgroundColor: Colors.teal[200],
+            backgroundColor: Colors.white,
             body: CustomScrollView(slivers: <Widget>[
               SliverAppBar(
                 expandedHeight: 200.0,
                 floating: true,
                 pinned: true,
-                backgroundColor: Colors.red[200],
+                backgroundColor: Hexcolor('#A38FA3'),
+                // Hexcolor('#A593B4'),
+                //  Hexcolor('#CDC3D5'),
+                // Hexcolor('#cfbae1'),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     decoration: BoxDecoration(
@@ -157,6 +164,14 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
+                      const Text(
+                        'Hello there,',
+                        style: (TextStyle(
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w400)),
+                      ),
                       new FutureBuilder(
                           future:
                               UserDbService(uid: user.uid).getNameFromUser(),
@@ -164,9 +179,11 @@ class _HomeState extends State<Home> {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               return new Text(
-                                'Hello there,\n${snapshot.data}',
+                                '${snapshot.data}',
                                 style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w500),
+                                    color: Colors.black54,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.left,
                               );
                             } else {
@@ -174,10 +191,11 @@ class _HomeState extends State<Home> {
                             }
                           }),
                       const Text(
-                        'These are the rooms around you\n\n\n',
+                        'These are the rooms around you\n\n',
                         style: (TextStyle(
                             fontSize: 12,
                             fontStyle: FontStyle.italic,
+                            color: Colors.black54,
                             fontWeight: FontWeight.w400)),
                         textAlign: TextAlign.center,
                       ),
@@ -200,7 +218,7 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width / 4,
-                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     child: Icon(Icons.arrow_back),
                   )),
               InkWell(
@@ -209,7 +227,7 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width / 4,
-                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     // Get a better icon legit
                     child: Icon(Icons.add_box),
                   )),
@@ -220,17 +238,18 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width / 4,
-                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     // Get a better icon legit
                     child: Icon(Icons.refresh),
                   )),
               InkWell(
-                  onTap: () => AllSettingsPanel()
-                      .showSettingsPanel(context, SettingsPanel.chatRoom),
+                  onTap: () => Navigator.of(context).pushNamed(
+                        '/ArchivedPage',
+                      ),
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width / 4,
-                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     // Get a better icon legit
                     child: Icon(Icons.bookmark),
                   )),

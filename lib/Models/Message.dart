@@ -6,6 +6,7 @@ import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'dart:async';
 
 class Message extends StatefulWidget {
@@ -41,7 +42,7 @@ class _MessageState extends State<Message> {
     String displayName;
 
     return new Card(
-        // color: Colors.teal[100],
+      // color: Colors.teal[100],
         margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         elevation: 5,
         // affects the vertical gap between messages in the ListView
@@ -70,7 +71,9 @@ class _MessageState extends State<Message> {
                                 color: Colors.blue[500])
                                 : Icon(Icons.arrow_drop_up),
                             onTap: () {
-                              dynamic result = dbService.upvoteMessage(widget.messageID, questionDetails.questionID, user.uid);
+                              dynamic result = dbService.upvoteMessage(
+                                  widget.messageID, questionDetails.questionID,
+                                  user.uid);
                               setState(() {
                                 alreadyUpvoted = !alreadyUpvoted;
                                 if (alreadyDownvoted) {
@@ -80,10 +83,12 @@ class _MessageState extends State<Message> {
                             },
                           ),
                           StreamBuilder<DocumentSnapshot>(
-                            stream: dbService.getMessageVotes(questionDetails.questionID, widget.messageID),
+                            stream: dbService.getMessageVotes(
+                                questionDetails.questionID, widget.messageID),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
-                                return Center(child: CircularProgressIndicator());
+                                return Center(
+                                    child: CircularProgressIndicator());
                               } else {
                                 // print("Current Votes: " + "${snapshot.data.data["votes"]}");
                                 return Text("${snapshot.data.data["votes"]}");
@@ -96,7 +101,8 @@ class _MessageState extends State<Message> {
                                 color: Colors.red[500])
                                 : Icon(Icons.arrow_drop_down),
                             onTap: () {
-                              dbService.downvoteMessage(widget.messageID, questionDetails.questionID, user.uid);
+                              dbService.downvoteMessage(widget.messageID,
+                                  questionDetails.questionID, user.uid);
                               setState(() {
                                 alreadyDownvoted = !alreadyDownvoted;
                                 if (alreadyUpvoted) {
@@ -113,7 +119,10 @@ class _MessageState extends State<Message> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             new Text(displayName,
-                                style: Theme.of(context).textTheme.subtitle1),
+                                style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .subtitle1),
                             new Container(
                               margin: const EdgeInsets.only(top: 6),
                               child: new Text(widget.text),
@@ -124,7 +133,7 @@ class _MessageState extends State<Message> {
                       new InkWell(
                         onTap: () async {
                           CollectionReference archivedCollection =
-                              Firestore.instance.collection("Users");
+                          Firestore.instance.collection("Users");
                           CollectionReference messages = archivedCollection
                               .document(user.uid)
                               .collection("Archived Messages");
@@ -159,6 +168,64 @@ class _MessageState extends State<Message> {
                 }
               }),
         ));
+//                      child: new CircleAvatar(
+//                          backgroundColor: Hexcolor('#CDC3D5'),
+//                          child: new Text(
+//                            displayName[0],
+//                            style: TextStyle(color: Colors.white),
+//                          )),
+//                    ),
+//                    new Expanded(
+//                      child: new Column(
+//                        crossAxisAlignment: CrossAxisAlignment.start,
+//                        children: [
+//                          new Text(displayName,
+//                              style: Theme.of(context).textTheme.subtitle1),
+//                          new Container(
+//                            margin: const EdgeInsets.only(top: 6),
+//                            child: new Text(widget.text),
+//                          )
+//                        ],
+//                      ),
+//                    ),
+//                    new InkWell(
+//                      onTap: () async {
+//                        CollectionReference archivedCollection =
+//                            Firestore.instance.collection("Users");
+//                        CollectionReference messages = archivedCollection
+//                            .document(user.uid)
+//                            .collection("Archived Messages");
+//                        setState(() {
+//                          bookmarked = !bookmarked;
+//                        });
+//                        print(bookmarked);
+//                        if (bookmarked == true) {
+//                          await messages.document(widget.id).setData({
+//                            "text": widget.text,
+//                            "from": widget.sender,
+//                          });
+//                        } else if (bookmarked == false) {
+//                          await messages.document(widget.id).delete();
+//                        }
+//                      },
+//                      child: Container(
+//                          height: 30,
+//                          width: 30,
+//                          alignment: Alignment.centerRight,
+//                          decoration: BoxDecoration(color: Colors.white10),
+//                          child: Icon(
+//                              bookmarked
+//                                  ? Icons.bookmark
+//                                  : Icons.bookmark_border,
+//                              color: (bookmarked == true)
+//                                  ? Colors.red[200]
+//                                  : null)),
+//                    ),
+//                  ],
+//                );
+//              }
+//            }));
 //    );
+//  }
   }
 }

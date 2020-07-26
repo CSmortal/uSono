@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
-
 
 class Register extends StatefulWidget {
   final Function toggleView;
@@ -39,8 +39,13 @@ class _RegisterState extends State<Register> {
             ),
             child: Scaffold(
               appBar: AppBar(
+                backgroundColor: Hexcolor('#A38FA3'),
                 elevation: 20.0,
-                title: Text('Sign up for a uSono account'),
+                title: Text('Sign up for an account',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                    )),
                 actions: [
                   // this property is the list of widgets to display in a row AFTER the Title widget in AppBarj
                   FlatButton.icon(
@@ -84,7 +89,7 @@ class _RegisterState extends State<Register> {
                       SizedBox(height: 20),
                       TextFormField(
                           decoration: textInputDecoration.copyWith(
-                              hintText: 'Enter a name to identify yourself'),
+                              hintText: 'Enter a nickname'),
                           validator: (val) => val.length < 3
                               ? 'Please enter a name at least 3 characters long'
                               : null,
@@ -95,9 +100,9 @@ class _RegisterState extends State<Register> {
                           }),
                       SizedBox(height: 20),
                       RaisedButton(
-                          color: Colors.pink[400],
+                          color: Colors.grey[200],
                           child: Text('Register',
-                              style: TextStyle(color: Colors.white)),
+                              style: TextStyle(color: Colors.black54)),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               // validates form based on form's state, using the validator properties in each FormField

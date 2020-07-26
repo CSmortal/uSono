@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:orbital_2020_usono_my_ver/Models/Message.dart';
 import 'package:orbital_2020_usono_my_ver/Models/QuestionDetails.dart';
 import 'package:orbital_2020_usono_my_ver/Models/RoomDetails.dart';
@@ -56,7 +57,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
       child: new Scaffold(
           appBar: new AppBar(
             title: new Text(widget.question),
-            backgroundColor: Colors.red[200],
+            backgroundColor: Hexcolor('#A38FA3'),
             elevation: 20,
             leading: FlatButton(
               child: Icon(Icons.arrow_back_ios),

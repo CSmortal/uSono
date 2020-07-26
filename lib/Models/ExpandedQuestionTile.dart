@@ -8,7 +8,8 @@ class ExpandedQuestionTile extends StatefulWidget {
   ExpandedQuestionTile(this.text, this.netVotes, this.toggleExpansion);
 
   @override
-  _ExpandedQuestionTileState createState() => _ExpandedQuestionTileState(text, netVotes);
+  _ExpandedQuestionTileState createState() =>
+      _ExpandedQuestionTileState(text, netVotes);
 }
 
 class _ExpandedQuestionTileState extends State<ExpandedQuestionTile> {
@@ -23,8 +24,10 @@ class _ExpandedQuestionTileState extends State<ExpandedQuestionTile> {
       child: new Column(
         children: <Widget>[
           new ListTile(
-            leading: Text("$netVotes"), // shows votes of this qn on the left of the tile
-            title: Text(text, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
+            leading: Text(
+                "$netVotes"), // shows votes of this qn on the left of the tile
+            title: Text(text,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
             trailing: FlatButton(
               child: Icon(Icons.expand_less),
               onPressed: widget.toggleExpansion,
