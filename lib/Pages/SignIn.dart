@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Pages/AnonSignIn.dart';
@@ -53,8 +52,8 @@ class _SignInState extends State<SignIn> {
                       Container(
                           margin:
                               const EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
-                          height: 350.0,
-                          width: 375.0,
+                          height: MediaQuery.of(context).size.height / 2.4,
+                          width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
