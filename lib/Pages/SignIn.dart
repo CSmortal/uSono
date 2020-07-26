@@ -42,7 +42,10 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 child: Scaffold(
+<<<<<<< HEAD
                   backgroundColor: Colors.white,
+=======
+>>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
                   resizeToAvoidBottomInset:
                       false, // Lazy way of avoiding bottom overflow when keyboard appears
                   // 2nd solution: https://medium.com/zipper-studios/the-keyboard-causes-the-bottom-overflowed-error-5da150a1c660
@@ -66,11 +69,16 @@ class _SignInState extends State<SignIn> {
                       Expanded(
                         child: Padding(
                           padding: EdgeInsets.symmetric(
+<<<<<<< HEAD
                               vertical: 0.0, horizontal: 50.0),
+=======
+                              vertical: 20.0, horizontal: 50.0),
+>>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
                           child: Form(
                             key: _formKey,
                             child: Column(
                               children: [
+<<<<<<< HEAD
                                 // SizedBox(height: 0.0),
                                 TextFormField(
                                     decoration: textInputDecoration.copyWith(
@@ -78,11 +86,18 @@ class _SignInState extends State<SignIn> {
                                         hintStyle: TextStyle(
                                             fontWeight: FontWeight.w400,
                                             color: Colors.grey)),
+=======
+                                SizedBox(height: 20),
+                                TextFormField(
+                                    decoration: textInputDecoration.copyWith(
+                                        hintText: 'Email'),
+>>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
                                     validator: (val) =>
                                         val.isEmpty ? 'Enter an email' : null,
                                     onChanged: (val) {
                                       setState(() => email = val);
                                     }),
+<<<<<<< HEAD
                                 SizedBox(height: 5.0),
                                 TextFormField(
                                     decoration: textInputDecoration.copyWith(
@@ -90,6 +105,12 @@ class _SignInState extends State<SignIn> {
                                         hintStyle: TextStyle(
                                             fontWeight: FontWeight.w400,
                                             color: Colors.grey)),
+=======
+                                SizedBox(height: 20),
+                                TextFormField(
+                                    decoration: textInputDecoration.copyWith(
+                                        hintText: 'Password'),
+>>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
                                     obscureText: true,
                                     validator: (val) => val.length < 6
                                         ? 'Enter a password 6+ chars long'
@@ -97,6 +118,7 @@ class _SignInState extends State<SignIn> {
                                     onChanged: (val) {
                                       setState(() => password = val);
                                     }),
+<<<<<<< HEAD
                                 FlatButton.icon(
                                   onPressed: widget.toggleView,
                                   icon: Icon(Icons.person_add),
@@ -115,6 +137,15 @@ class _SignInState extends State<SignIn> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.w500,
                                               color: Colors.black54)),
+=======
+                                SizedBox(height: 20),
+                                Column(children: [
+                                  RaisedButton(
+                                      color: Colors.pink[400],
+                                      child: Text('Sign In',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+>>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
                                       onPressed: () async {
                                         if (_formKey.currentState.validate()) {
                                           // validates form based on form's state, using the validator properties in each FormField
@@ -141,11 +172,18 @@ class _SignInState extends State<SignIn> {
                                       }),
                                   SizedBox(height: 12),
                                   RaisedButton(
+<<<<<<< HEAD
                                       color: Colors.grey[200],
                                       child: Text('Guest Sign In',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w500,
                                               color: Colors.black54)),
+=======
+                                      color: Colors.pink[400],
+                                      child: Text('Guest Sign In',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+>>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
                                       onPressed: () {
                                         setState(() {
                                           anon = true;

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
 
-
 class Register extends StatefulWidget {
   final Function toggleView;
   Register({this.toggleView});
