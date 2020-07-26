@@ -6,6 +6,7 @@ import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:provider/provider.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final String question;
@@ -42,7 +43,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(widget.question),
-          backgroundColor: Colors.red[200],
+          backgroundColor: Hexcolor('#A38FA3'),
           elevation: 20,
           leading: FlatButton(
             child: Icon(Icons.arrow_back_ios),

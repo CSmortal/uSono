@@ -3,6 +3,7 @@ import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'dart:async';
 
 class Message extends StatefulWidget {
@@ -52,7 +53,12 @@ class _MessageState extends State<Message> {
                       margin: const EdgeInsets.only(
                           right: 18), // gap between Icon and the text
 
-                      child: new CircleAvatar(child: new Text(displayName[0])),
+                      child: new CircleAvatar(
+                          backgroundColor: Hexcolor('#CDC3D5'),
+                          child: new Text(
+                            displayName[0],
+                            style: TextStyle(color: Colors.white),
+                          )),
                     ),
                     new Expanded(
                       child: new Column(
@@ -91,7 +97,7 @@ class _MessageState extends State<Message> {
                           height: 30,
                           width: 30,
                           alignment: Alignment.centerRight,
-                          decoration: BoxDecoration(color: Colors.teal[100]),
+                          decoration: BoxDecoration(color: Colors.white10),
                           child: Icon(
                               bookmarked
                                   ? Icons.bookmark
