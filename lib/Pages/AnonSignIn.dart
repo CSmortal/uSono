@@ -36,13 +36,13 @@ class _AnonSignInState extends State<AnonSignIn> {
                       child: SingleChildScrollView(
                         child: Column(children: <Widget>[
                           new SizedBox(
-                            height: 80,
+                            height: MediaQuery.of(context).size.height / 10,
                           ),
                           Container(
-                              margin: const EdgeInsets.fromLTRB(
-                                  0.0, 50.0, 0.0, 0.0),
-                              height: 325.0,
-                              width: 375.0,
+                              // margin: const EdgeInsets.fromLTRB(
+                              //     0.0, 50.0, 0.0, 0.0),
+                              height: MediaQuery.of(context).size.height / 2,
+                              width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: AssetImage(
@@ -86,8 +86,11 @@ class _AnonSignInState extends State<AnonSignIn> {
                                       child: Text(error),
                                     ),
                                     MaterialButton(
-                                      height: 40,
-                                      minWidth: 60,
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              17,
+                                      minWidth:
+                                          MediaQuery.of(context).size.width / 5,
                                       color: Colors.grey[100],
                                       textColor: Colors.black,
                                       child: new Text(
@@ -119,8 +122,11 @@ class _AnonSignInState extends State<AnonSignIn> {
                                             TextStyle(color: Colors.black54)),
                                     SizedBox(height: 5.0),
                                     MaterialButton(
-                                      height: 40,
-                                      minWidth: 60,
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              17,
+                                      minWidth:
+                                          MediaQuery.of(context).size.width / 5,
                                       color: Colors.grey[100],
                                       textColor: Colors.black,
                                       child: new Text("Return to Login Page",

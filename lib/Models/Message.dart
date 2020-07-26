@@ -42,7 +42,7 @@ class _MessageState extends State<Message> {
     String displayName;
 
     return new Card(
-      // color: Colors.teal[100],
+        // color: Colors.teal[100],
         margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         elevation: 5,
         // affects the vertical gap between messages in the ListView
@@ -59,20 +59,19 @@ class _MessageState extends State<Message> {
                       ? displayName = "You"
                       : displayName = widget.sender;
                   return new Row(
-
                     children: [
-
                       Column(
                         // the stack overflow functionality
                         children: <Widget>[
                           InkWell(
                             child: alreadyUpvoted
                                 ? Icon(Icons.arrow_drop_up,
-                                color: Colors.blue[500])
+                                    color: Colors.blue[500])
                                 : Icon(Icons.arrow_drop_up),
                             onTap: () {
                               dynamic result = dbService.upvoteMessage(
-                                  widget.messageID, questionDetails.questionID,
+                                  widget.messageID,
+                                  questionDetails.questionID,
                                   user.uid);
                               setState(() {
                                 alreadyUpvoted = !alreadyUpvoted;
@@ -98,7 +97,7 @@ class _MessageState extends State<Message> {
                           InkWell(
                             child: alreadyDownvoted
                                 ? Icon(Icons.arrow_drop_down,
-                                color: Colors.red[500])
+                                    color: Colors.red[500])
                                 : Icon(Icons.arrow_drop_down),
                             onTap: () {
                               dbService.downvoteMessage(widget.messageID,
@@ -113,16 +112,15 @@ class _MessageState extends State<Message> {
                           ),
                         ],
                       ),
-
+                      new SizedBox(
+                        width: 15,
+                      ),
                       new Expanded(
                         child: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             new Text(displayName,
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .subtitle1),
+                                style: Theme.of(context).textTheme.subtitle1),
                             new Container(
                               margin: const EdgeInsets.only(top: 6),
                               child: new Text(widget.text),
@@ -133,7 +131,7 @@ class _MessageState extends State<Message> {
                       new InkWell(
                         onTap: () async {
                           CollectionReference archivedCollection =
-                          Firestore.instance.collection("Users");
+                              Firestore.instance.collection("Users");
                           CollectionReference messages = archivedCollection
                               .document(user.uid)
                               .collection("Archived Messages");
@@ -154,7 +152,7 @@ class _MessageState extends State<Message> {
                             height: 30,
                             width: 30,
                             alignment: Alignment.centerRight,
-                            decoration: BoxDecoration(color: Colors.teal[100]),
+                            decoration: BoxDecoration(color: Colors.white),
                             child: Icon(
                                 bookmarked
                                     ? Icons.bookmark
