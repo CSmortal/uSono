@@ -69,13 +69,8 @@ class _QuestionPageState extends State<QuestionPage> {
           FlatButton.icon(
               onPressed: () => dbService.createQuestion(context, roomName,
                   roomID), // navigate to Question Settings formn
-<<<<<<< HEAD
               icon: Icon(Icons.add_circle),
               label: Text("Add a thread!")),
-=======
-              icon: Icon(Icons.add),
-              label: Text("Ask a question!")),
->>>>>>> 441afef62367a279c37266b11eb51c1a598e4e13
         ],
       ),
       body: CustomScrollView(
