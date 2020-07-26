@@ -15,9 +15,23 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
   CollectionReference roomsCollection = Firestore.instance.collection("Rooms");
 
   Future createChatRoom(String roomName) async { // creates a chat room. The plan is to make each room a document in the Rooms collection, then there is a subcollection of messages in each room.
-    dynamic result = await roomsCollection.add({"roomName": roomName});
+    dynamic result = await roomsCollection.add({"roomName": roomName, "timeCreated": DateTime.now().millisecondsSinceEpoch, "numUsers": 1});
     return result.documentID; // calling this function will return the room's ID, which is used by the route handler to pass arguments
   }
+
+  Future deleteRoom() async { // calling this function will check if it meets the conditions for the room to be deleted first
+    DocumentSnapshot docSS = await roomsCollection.document(roomID).get();
+    int numUsers = docSS.data["numUsers"];
+    int timeNow = DateTime.now().millisecondsSinceEpoch;
+    int timeDifference = timeNow - docSS.data["timeCreated"];
+
+    if (numUsers == 0 && timeDifference >= 5000) { // if no users and it has been more than 5 minutes since the room is created, delete that room
+      await roomsCollection.document(roomID).delete();
+      print("Room with name " + roomName + " has been deleted");
+    }
+
+  }
+
 
   Future sendMessage(String msg, String sender, String questionID) async { // adds the message to the database
 

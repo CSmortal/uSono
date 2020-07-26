@@ -96,12 +96,17 @@ class _HomeState extends State<Home> {
             color: color,
             child: GestureDetector(
               onTap: () async {
-                DocumentSnapshot docSS = await Firestore.instance
+
+                DocumentReference docRef = Firestore.instance
                     .collection("Rooms")
-                    .document(roomID)
-                    .get();
-                double _roomLat = docSS.data["Latitude"];
-                double _roomLng = docSS.data["Longitude"];
+                    .document(roomID);
+
+                int currNumUsers = (await docRef.get()).data["numUsers"];
+
+                docRef.updateData({"numUsers": currNumUsers += 1});
+
+                double _roomLat = (await docRef.get()).data["Latitude"];
+                double _roomLng = (await docRef.get()).data["Longitude"];
 
                 print("Lat: $_roomLat");
                 print("Lng: $_roomLng");

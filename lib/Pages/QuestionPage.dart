@@ -55,6 +55,8 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     RoomDbService dbService = RoomDbService(roomName, roomID);
+    DocumentReference docRef = Firestore.instance.collection("Rooms").document(roomID);
+    int currNumUsers; //(await docRef.get()).data["numUsers"];
 
     return Scaffold(
       appBar: new AppBar(
@@ -63,7 +65,14 @@ class _QuestionPageState extends State<QuestionPage> {
         elevation: 20,
         leading: FlatButton(
           child: Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context), // Navigates back to Home()
+          onPressed: () async {
+            currNumUsers = (await docRef.get()).data["numUsers"];
+            print("currNumUsers: " + "$currNumUsers");
+            await docRef.updateData({"numUsers": currNumUsers -= 1});
+            print("currNumUsers: " + "$currNumUsers");
+            await dbService.deleteRoom();
+            Navigator.pop(context); // Navigates back to Home()
+          }
         ),
         actions: <Widget>[
           FlatButton.icon(
