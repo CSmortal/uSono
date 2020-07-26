@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:orbital_2020_usono_my_ver/Models/Message.dart';
+import 'package:orbital_2020_usono_my_ver/Models/QuestionDetails.dart';
+import 'package:orbital_2020_usono_my_ver/Models/RoomDetails.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
@@ -37,21 +41,31 @@ class _ChatRoomPageState extends State<ChatRoomPage>
 
   @override
   Widget build(BuildContext context) {
-    RoomDbService dbService = RoomDbService(widget.roomName, widget.roomID);
 
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(widget.question),
-          backgroundColor: Colors.red[200],
-          elevation: 20,
-          leading: FlatButton(
-            child: Icon(Icons.arrow_back_ios),
-            onPressed: () =>
-                Navigator.pop(context), // navigates back to QuestionPage
+    final _controller = ScrollController();
+    RoomDbService dbService = RoomDbService(widget.roomName, widget.roomID);
+    // _controller.jumpTo(10);
+
+    return MultiProvider(
+
+      providers: [
+        Provider<RoomDetails>.value(value: RoomDetails(widget.roomName, widget.roomID)),
+        Provider<QuestionDetails>.value(value: QuestionDetails(widget.question, widget.questionID)),
+      ],
+
+      child: new Scaffold(
+          appBar: new AppBar(
+            title: new Text(widget.question),
+            backgroundColor: Colors.red[200],
+            elevation: 20,
+            leading: FlatButton(
+              child: Icon(Icons.arrow_back_ios),
+              onPressed: () =>
+                  Navigator.pop(context), // navigates back to QuestionPage
+            ),
           ),
-        ),
-        body: new Column(
-          children: [
+          body: new Column(
+            children: [
 //            new Container(
 //              color: Colors.red[200],
 //              constraints: BoxConstraints.expand(width: 400.0, height: 100.0),
@@ -68,44 +82,54 @@ class _ChatRoomPageState extends State<ChatRoomPage>
 //              ),
 //            ),
 
-            new Flexible(
-              flex: 10,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: dbService.getQuestionMessages(widget.questionID),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+
+
+              new Flexible(
+                flex: 10,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: dbService.getQuestionMessages(widget.questionID),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
 //                    print("Snapshot connectionState: " +
 //                        "${snapshot.connectionState}");
 
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context, index) {
-                        return Message(
-                          text: snapshot.data.documents[index].data["text"],
-                          sender: snapshot.data.documents[index].data["from"],
-                          id: snapshot.data.documents[index].documentID
-                              .toString(),
-                        );
-                      },
-                    );
-                  }
-                },
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+
+                      Timer(
+                        Duration(seconds: 1),
+                            () => _controller.jumpTo(_controller.position.maxScrollExtent),
+                      );
+
+                      return ListView.builder(
+                        controller: _controller,
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          return Message(
+                            text: snapshot.data.documents[index].data["text"],
+                            sender: snapshot.data.documents[index].data["from"],
+                            messageID: snapshot.data.documents[index].documentID
+                                .toString(),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
 
-            new Divider(height: 1),
+              new Divider(height: 1),
 
-            new Flexible(
-              // Input box
-              flex: 1,
-              child: _buildComposer(),
-            )
-          ],
-        ));
+              new Flexible(
+                // Input box
+                flex: 1,
+                child: _buildComposer(),
+              )
+            ],
+          )),
+    );
   }
 
   Widget _buildComposer() {

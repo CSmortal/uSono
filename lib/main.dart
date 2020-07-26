@@ -11,7 +11,6 @@ import 'package:orbital_2020_usono_my_ver/Pages/SignIn.dart';
 import 'package:orbital_2020_usono_my_ver/Pages/ChatRoomPage.dart';
 import 'package:orbital_2020_usono_my_ver/Pages/Home.dart';
 import 'package:orbital_2020_usono_my_ver/Services/auth.dart';
-import 'package:orbital_2020_usono_my_ver/Models/db_User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 
 void main() => runApp(ChatApp());

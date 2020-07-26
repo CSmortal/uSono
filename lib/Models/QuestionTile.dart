@@ -68,6 +68,9 @@ class _QuestionTileState extends State<QuestionTile> {
                                 user.uid, widget.questionID);
                             setState(() {
                               alreadyUpvoted = !alreadyUpvoted;
+                              if (alreadyDownvoted) {
+                                alreadyDownvoted = false;
+                              }
                             });
                           },
                         ),
@@ -92,6 +95,9 @@ class _QuestionTileState extends State<QuestionTile> {
                                 user.uid, widget.questionID);
                             setState(() {
                               alreadyDownvoted = !alreadyDownvoted;
+                              if (alreadyUpvoted) {
+                                alreadyUpvoted = false;
+                              }
                             });
                           },
                         ),
