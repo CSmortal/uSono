@@ -23,8 +23,6 @@ class _MessageState extends State<Message> {
 //  final AnimationController animationController;
 //  static String defaultUserName = "You";
   bool bookmarked = false;
-  bool alreadyUpvoted = false;
-  bool alreadyDownvoted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,67 +48,72 @@ class _MessageState extends State<Message> {
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder<String>(
               future: UserDbService(uid: user.uid).getNameFromUser(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+              builder: (context, snapshot1) {
+                if (!snapshot1.hasData) {
                   return Container();
                 } else {
-                  String userName = snapshot.data;
+                  String userName = snapshot1.data;
                   userName == widget.sender
                       ? displayName = "You"
                       : displayName = widget.sender;
                   return new Row(
                     children: [
-                      Column(
-                        // the stack overflow functionality
-                        children: <Widget>[
-                          InkWell(
-                            child: alreadyUpvoted
-                                ? Icon(Icons.arrow_drop_up,
+                      FutureBuilder(
+                        future: dbService.getMessageVoteStatus(user.uid, questionDetails.questionID, widget.messageID),
+                        builder: (context, snapshot2) {
+                          return Column(
+                            // the stack overflow functionality
+                            children: <Widget>[
+                              InkWell(
+                                child: snapshot2.data == "Upvoted"
+                                    ? Icon(Icons.arrow_drop_up,
                                     color: Colors.blue[500])
-                                : Icon(Icons.arrow_drop_up),
-                            onTap: () {
-                              dynamic result = dbService.upvoteMessage(
-                                  widget.messageID,
-                                  questionDetails.questionID,
-                                  user.uid);
-                              setState(() {
-                                alreadyUpvoted = !alreadyUpvoted;
-                                if (alreadyDownvoted) {
-                                  alreadyDownvoted = false;
-                                }
-                              });
-                            },
-                          ),
-                          StreamBuilder<DocumentSnapshot>(
-                            stream: dbService.getMessageVotes(
-                                questionDetails.questionID, widget.messageID),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else {
-                                // print("Current Votes: " + "${snapshot.data.data["votes"]}");
-                                return Text("${snapshot.data.data["votes"]}");
-                              }
-                            },
-                          ),
-                          InkWell(
-                            child: alreadyDownvoted
-                                ? Icon(Icons.arrow_drop_down,
+                                    : Icon(Icons.arrow_drop_up),
+                                onTap: () {
+                                  dynamic result = dbService.upvoteMessage(
+                                      widget.messageID,
+                                      questionDetails.questionID,
+                                      user.uid);
+//                                  setState(() {
+//                                    alreadyUpvoted = !alreadyUpvoted;
+//                                    if (alreadyDownvoted) {
+//                                      alreadyDownvoted = false;
+//                                    }
+//                                  });
+                                },
+                              ),
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: dbService.getMessageVotes(
+                                    questionDetails.questionID, widget.messageID),
+                                builder: (context, snapshot1) {
+                                  if (!snapshot1.hasData) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else {
+                                    // print("Current Votes: " + "${snapshot1.data.data["votes"]}");
+                                    return Text("${snapshot1.data.data["votes"]}");
+                                  }
+                                },
+                              ),
+                              InkWell(
+                                child: snapshot2.data == "Downvoted"
+                                    ? Icon(Icons.arrow_drop_down,
                                     color: Colors.red[500])
-                                : Icon(Icons.arrow_drop_down),
-                            onTap: () {
-                              dbService.downvoteMessage(widget.messageID,
-                                  questionDetails.questionID, user.uid);
-                              setState(() {
-                                alreadyDownvoted = !alreadyDownvoted;
-                                if (alreadyUpvoted) {
-                                  alreadyUpvoted = false;
-                                }
-                              });
-                            },
-                          ),
-                        ],
+                                    : Icon(Icons.arrow_drop_down),
+                                onTap: () {
+                                  dbService.downvoteMessage(widget.messageID,
+                                      questionDetails.questionID, user.uid);
+//                                  setState(() {
+//                                    alreadyDownvoted = !alreadyDownvoted;
+//                                    if (alreadyUpvoted) {
+//                                      alreadyUpvoted = false;
+//                                    }
+//                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        }
                       ),
                       new SizedBox(
                         width: 15,

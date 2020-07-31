@@ -23,8 +23,6 @@ class _QuestionTileState extends State<QuestionTile> {
   final String text;
   int netVotes = 0;
   bool expand = false;
-  bool alreadyUpvoted = false;
-  bool alreadyDownvoted = false;
 
   _QuestionTileState(this.text);
 
@@ -32,10 +30,13 @@ class _QuestionTileState extends State<QuestionTile> {
     setState(() => expand = !expand);
   }
 
+
   @override
   Widget build(BuildContext context) {
     RoomDbService dbService = RoomDbService(widget.roomName, widget.roomID);
     final user = Provider.of<User>(context);
+
+    print(widget.text + " with questionID of " + widget.questionID);
 
     return expand
         ? ExpandedQuestionTile(text, netVotes, toggleExpansion)
@@ -55,53 +56,66 @@ class _QuestionTileState extends State<QuestionTile> {
                 child: new Row(
                   // crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Column(
-                      // the stack overflow functionality
-                      children: <Widget>[
-                        InkWell(
-                          child: alreadyUpvoted
-                              ? Icon(Icons.arrow_drop_up,
-                                  color: Colors.blue[500])
-                              : Icon(Icons.arrow_drop_up),
-                          onTap: () {
-                            dynamic result = dbService.upvoteQuestion(
-                                user.uid, widget.questionID);
-                            setState(() {
-                              alreadyUpvoted = !alreadyUpvoted;
-                              if (alreadyDownvoted) {
-                                alreadyDownvoted = false;
-                              }
-                            });
-                          },
-                        ),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: dbService.getQuestionVotes(widget.questionID),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            } else {
-                              // print("Current Votes: " + "${snapshot.data.data["votes"]}");
-                              return Text("${snapshot.data.data["votes"]}");
-                            }
-                          },
-                        ),
-                        InkWell(
-                          child: alreadyDownvoted
-                              ? Icon(Icons.arrow_drop_down,
-                                  color: Colors.red[500])
-                              : Icon(Icons.arrow_drop_down),
-                          onTap: () {
-                            dbService.downvoteQuestion(
-                                user.uid, widget.questionID);
-                            setState(() {
-                              alreadyDownvoted = !alreadyDownvoted;
-                              if (alreadyUpvoted) {
-                                alreadyUpvoted = false;
-                              }
-                            });
-                          },
-                        ),
-                      ],
+                    FutureBuilder<String>(
+                      future: dbService.getQuestionVoteStatus(user.uid, widget.questionID),
+                      builder: (context, snapshot) {
+
+                        if (!snapshot.hasData) {
+                          return CircularProgressIndicator();
+                        } else {
+                          return Column(
+                            // the stack overflow functionality
+                            children: <Widget>[
+                              InkWell(
+                                child: snapshot.data == "Upvoted"
+                                    ? Icon(Icons.arrow_drop_up,
+                                    color: Colors.blue[500])
+                                    : Icon(Icons.arrow_drop_up),
+                                onTap: () {
+                                  dynamic result = dbService.upvoteQuestion(
+                                      user.uid, widget.questionID);
+//                                  setState(() {
+//                                    alreadyUpvoted = !alreadyUpvoted;
+//                                    if (alreadyDownvoted) {
+//                                      alreadyDownvoted = false;
+//                                    }
+//                                  });
+                                },
+                              ),
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: dbService.getQuestionVotes(widget.questionID),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Center(child: CircularProgressIndicator());
+                                  } else {
+                                    // print("Current Votes: " + "${snapshot.data.data["votes"]}");
+                                    // print("questionID: " + widget.questionID);
+                                    return Text("${snapshot.data.data["votes"]}");
+                                  }
+                                },
+                              ),
+                              InkWell(
+                                child: snapshot.data == "Downvoted"
+                                    ? Icon(Icons.arrow_drop_down,
+                                    color: Colors.red[500])
+                                    : Icon(Icons.arrow_drop_down),
+                                onTap: () {
+                                  dbService.downvoteQuestion(
+                                      user.uid, widget.questionID);
+//                                  setState(() {
+//                                    alreadyDownvoted = !alreadyDownvoted;
+//                                    if (alreadyUpvoted) {
+//                                      alreadyUpvoted = false;
+//                                    }
+//                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        }
+
+
+                      }
                     ),
 
                     SizedBox(width: 20),
@@ -112,7 +126,7 @@ class _QuestionTileState extends State<QuestionTile> {
                       child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            text,
+                            widget.text + " with questionID " + widget.questionID,
                             style: TextStyle(fontSize: 18),
                           )),
                     ),
