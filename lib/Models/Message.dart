@@ -22,7 +22,7 @@ class Message extends StatefulWidget {
 class _MessageState extends State<Message> {
 //  final AnimationController animationController;
 //  static String defaultUserName = "You";
-  bool bookmarked = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,73 +35,68 @@ class _MessageState extends State<Message> {
     final user = Provider.of<User>(context);
     final roomDetails = Provider.of<RoomDetails>(context);
     final questionDetails = Provider.of<QuestionDetails>(context);
-    final dbService = RoomDbService(roomDetails.roomName, roomDetails.roomID);
+    final roomDbService = RoomDbService(
+        roomDetails.roomName, roomDetails.roomID);
+    final userDbService = UserDbService(uid: user.uid);
 
     String displayName;
 
     return new Card(
-        // color: Colors.teal[100],
-        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-        elevation: 5,
-        // affects the vertical gap between messages in the ListView
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: FutureBuilder<String>(
-              future: UserDbService(uid: user.uid).getNameFromUser(),
-              builder: (context, snapshot1) {
-                if (!snapshot1.hasData) {
-                  return Container();
-                } else {
-                  String userName = snapshot1.data;
-                  userName == widget.sender
-                      ? displayName = "You"
-                      : displayName = widget.sender;
-                  return new Row(
-                    children: [
-                      FutureBuilder(
-                        future: dbService.getMessageVoteStatus(user.uid, questionDetails.questionID, widget.messageID),
+      // color: Colors.teal[100],
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+      elevation: 5,
+      // affects the vertical gap between messages in the ListView
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FutureBuilder<String>(
+            future: userDbService.getNameFromUser(),
+            builder: (context, snapshot1) {
+              if (!snapshot1.hasData) {
+                return Container();
+              } else {
+                String userName = snapshot1.data;
+                userName == widget.sender
+                    ? displayName = "You"
+                    : displayName = widget.sender;
+                return new Row(
+                  children: [
+                    FutureBuilder(
+                        future: roomDbService.getMessageVoteStatus(
+                            user.uid, questionDetails.questionID,
+                            widget.messageID),
                         builder: (context, snapshot2) {
                           return Column(
                             // the stack overflow functionality
                             children: <Widget>[
                               InkWell(
                                 child: snapshot2.data == "Upvoted"
-                                    ? Icon(Icons.arrow_drop_up,
-                                    color: Colors.blue[500])
+                                    ? Icon(Icons.arrow_drop_up, color: Colors.blue[500])
                                     : Icon(Icons.arrow_drop_up),
                                 onTap: () {
-                                  dynamic result = dbService.upvoteMessage(
-                                      widget.messageID,
-                                      questionDetails.questionID,
-                                      user.uid);
-//                                  setState(() {
-//                                    alreadyUpvoted = !alreadyUpvoted;
-//                                    if (alreadyDownvoted) {
-//                                      alreadyDownvoted = false;
-//                                    }
-//                                  });
+                                  dynamic result = roomDbService
+                                      .upvoteMessage(widget.messageID, questionDetails.questionID, user.uid);
                                 },
                               ),
                               StreamBuilder<DocumentSnapshot>(
-                                stream: dbService.getMessageVotes(
-                                    questionDetails.questionID, widget.messageID),
+                                stream: roomDbService.getMessageVotes(questionDetails.questionID, widget.messageID),
                                 builder: (context, snapshot1) {
                                   if (!snapshot1.hasData) {
                                     return Center(
                                         child: CircularProgressIndicator());
                                   } else {
                                     // print("Current Votes: " + "${snapshot1.data.data["votes"]}");
-                                    return Text("${snapshot1.data.data["votes"]}");
+                                    return Text(
+                                        "${snapshot1.data.data["votes"]}");
                                   }
                                 },
                               ),
                               InkWell(
                                 child: snapshot2.data == "Downvoted"
-                                    ? Icon(Icons.arrow_drop_down,
-                                    color: Colors.red[500])
+                                    ? Icon(Icons.arrow_drop_down, color: Colors.red[500])
                                     : Icon(Icons.arrow_drop_down),
                                 onTap: () {
-                                  dbService.downvoteMessage(widget.messageID,
+                                  roomDbService.downvoteMessage(
+                                      widget.messageID,
                                       questionDetails.questionID, user.uid);
 //                                  setState(() {
 //                                    alreadyDownvoted = !alreadyDownvoted;
@@ -114,119 +109,75 @@ class _MessageState extends State<Message> {
                             ],
                           );
                         }
+                    ),
+                    new SizedBox(
+                      width: 15,
+                    ),
+                    new Expanded(
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          new Text(displayName,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .subtitle1),
+                          new Container(
+                            margin: const EdgeInsets.only(top: 6),
+                            child: new Text(widget.text),
+                          )
+                        ],
                       ),
-                      new SizedBox(
-                        width: 15,
-                      ),
-                      new Expanded(
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            new Text(displayName,
-                                style: Theme.of(context).textTheme.subtitle1),
-                            new Container(
-                              margin: const EdgeInsets.only(top: 6),
-                              child: new Text(widget.text),
-                            )
-                          ],
-                        ),
-                      ),
-                      new InkWell(
-                        onTap: () async {
-                          CollectionReference archivedCollection =
-                              Firestore.instance.collection("Users");
-                          CollectionReference messages = archivedCollection
-                              .document(user.uid)
-                              .collection("Archived Messages");
-                          setState(() {
-                            bookmarked = !bookmarked;
-                          });
-                          print(bookmarked);
-                          if (bookmarked == true) {
-                            await messages.document(widget.messageID).setData({
-                              "text": widget.text,
-                              "from": widget.sender,
-                            });
-                          } else if (bookmarked == false) {
-                            await messages.document(widget.messageID).delete();
+                    ),
+                    FutureBuilder<bool>(
+                        future: userDbService.getMessageArchivedStatus(
+                            widget.messageID),
+                        builder: (context, snapshot3) {
+
+                          bool alreadyArchived = snapshot3.data;
+
+                          if (!snapshot3.hasData) {
+                            return CircularProgressIndicator();
+                          } else {
+                            return new InkWell(
+                              child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  alignment: Alignment.centerRight,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white),
+                                  child: Icon(
+                                      alreadyArchived ? Icons.bookmark : Icons.bookmark_border,
+                                      color: alreadyArchived ? Colors.red[200] : null)
+                              ),
+
+                              onTap: () async {
+                                CollectionReference archivedCollection = Firestore
+                                    .instance.collection("Users");
+                                CollectionReference messages = archivedCollection
+                                    .document(user.uid).collection(
+                                    "Archived Messages");
+
+                                if (alreadyArchived) {
+                                  userDbService.deleteArchivedMessage(widget.messageID);
+                                } else {
+                                  userDbService.addArchivedMessage(widget.text, widget.messageID, questionDetails.question,
+                                      roomDetails.roomName, widget.sender);
+                                }
+                              },
+                            );
                           }
-                        },
-                        child: Container(
-                            height: 30,
-                            width: 30,
-                            alignment: Alignment.centerRight,
-                            decoration: BoxDecoration(color: Colors.white),
-                            child: Icon(
-                                bookmarked
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_border,
-                                color: (bookmarked == true)
-                                    ? Colors.red[200]
-                                    : null)),
-                      ),
-                    ],
-                  );
-                }
-              }),
-        ));
-//                      child: new CircleAvatar(
-//                          backgroundColor: Hexcolor('#CDC3D5'),
-//                          child: new Text(
-//                            displayName[0],
-//                            style: TextStyle(color: Colors.white),
-//                          )),
-//                    ),
-//                    new Expanded(
-//                      child: new Column(
-//                        crossAxisAlignment: CrossAxisAlignment.start,
-//                        children: [
-//                          new Text(displayName,
-//                              style: Theme.of(context).textTheme.subtitle1),
-//                          new Container(
-//                            margin: const EdgeInsets.only(top: 6),
-//                            child: new Text(widget.text),
-//                          )
-//                        ],
-//                      ),
-//                    ),
-//                    new InkWell(
-//                      onTap: () async {
-//                        CollectionReference archivedCollection =
-//                            Firestore.instance.collection("Users");
-//                        CollectionReference messages = archivedCollection
-//                            .document(user.uid)
-//                            .collection("Archived Messages");
-//                        setState(() {
-//                          bookmarked = !bookmarked;
-//                        });
-//                        print(bookmarked);
-//                        if (bookmarked == true) {
-//                          await messages.document(widget.id).setData({
-//                            "text": widget.text,
-//                            "from": widget.sender,
-//                          });
-//                        } else if (bookmarked == false) {
-//                          await messages.document(widget.id).delete();
-//                        }
-//                      },
-//                      child: Container(
-//                          height: 30,
-//                          width: 30,
-//                          alignment: Alignment.centerRight,
-//                          decoration: BoxDecoration(color: Colors.white10),
-//                          child: Icon(
-//                              bookmarked
-//                                  ? Icons.bookmark
-//                                  : Icons.bookmark_border,
-//                              color: (bookmarked == true)
-//                                  ? Colors.red[200]
-//                                  : null)),
-//                    ),
-//                  ],
-//                );
-//              }
-//            }));
-//    );
-//  }
+
+                        }),
+                  ],
+                );
+              }
+            }
+        ),
+      ),
+    );
   }
 }
+
+
+

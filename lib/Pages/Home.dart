@@ -250,6 +250,7 @@ class _HomeState extends State<Home> {
               InkWell(
                   onTap: () => Navigator.of(context).pushNamed(
                         '/ArchivedPage',
+                        // should pass room name, question
                       ),
                   child: Container(
                     height: 60,

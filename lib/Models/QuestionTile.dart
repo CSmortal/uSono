@@ -36,7 +36,7 @@ class _QuestionTileState extends State<QuestionTile> {
     RoomDbService dbService = RoomDbService(widget.roomName, widget.roomID);
     final user = Provider.of<User>(context);
 
-    print(widget.text + " with questionID of " + widget.questionID);
+    // print(widget.text + " with questionID of " + widget.questionID);
 
     return expand
         ? ExpandedQuestionTile(text, netVotes, toggleExpansion)
@@ -126,7 +126,7 @@ class _QuestionTileState extends State<QuestionTile> {
                       child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            widget.text + " with questionID " + widget.questionID,
+                            widget.text,
                             style: TextStyle(fontSize: 18),
                           )),
                     ),

@@ -69,6 +69,7 @@ class AuthService {
     FirebaseUser user = await _auth.currentUser();
     if (user.email == null) {
         user.delete();
+        Firestore.instance.collection('Users').document(user.uid).delete(); // deletes anon users upon logout from firestore
     } else {
         return await _auth.signOut();
     }

@@ -44,7 +44,9 @@ class _ChatRoomPageState extends State<ChatRoomPage>
   Widget build(BuildContext context) {
 
     final _controller = ScrollController();
-    RoomDbService dbService = RoomDbService(widget.roomName, widget.roomID);
+    final user = Provider.of<User>(context);
+    RoomDbService roomDbService = RoomDbService(widget.roomName, widget.roomID);
+    UserDbService userDbService = UserDbService(uid: user.uid);
     // _controller.jumpTo(10);
 
     return MultiProvider(
@@ -88,35 +90,39 @@ class _ChatRoomPageState extends State<ChatRoomPage>
               new Flexible(
                 flex: 10,
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: dbService.getQuestionMessages(widget.questionID),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-//                    print("Snapshot connectionState: " +
-//                        "${snapshot.connectionState}");
-
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-
-                      Timer(
-                        Duration(seconds: 1),
-                            () => _controller.jumpTo(_controller.position.maxScrollExtent),
-                      );
-
-                      return ListView.builder(
-                        controller: _controller,
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (context, index) {
-                          return Message(
-                            text: snapshot.data.documents[index].data["text"],
-                            sender: snapshot.data.documents[index].data["from"],
-                            messageID: snapshot.data.documents[index].documentID
-                                .toString(),
+                  stream: roomDbService.getQuestionMessages(widget.questionID),
+                  builder: (context, snapshot1) {
+                    return StreamBuilder<QuerySnapshot>(
+                      stream: userDbService.getUserArchivedMessages(),
+                      builder: (context, snapshot2) {
+                        if (!snapshot1.hasData) {
+                          return Center(
+                            child: CircularProgressIndicator(),
                           );
-                        },
-                      );
-                    }
+                        } else {
+
+                          Timer(
+                            Duration(seconds: 1),
+                                () => _controller.jumpTo(_controller.position.maxScrollExtent),
+                          );
+
+                          return ListView.builder(
+                            controller: _controller,
+                            itemCount: snapshot1.data.documents.length,
+                            itemBuilder: (context, index) {
+                              return Message(
+                                text: snapshot1.data.documents[index].data["text"],
+                                sender: snapshot1.data.documents[index].data["from"],
+                                messageID: snapshot1.data.documents[index].documentID
+                                    .toString(),
+                              );
+                            },
+                          );
+                        }
+                      }
+                    );
+                    
+
                   },
                 ),
               ),
@@ -136,7 +142,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
   Widget _buildComposer() {
     final user = Provider.of<User>(context);
 
-    RoomDbService dbService = RoomDbService(widget.roomName, widget.roomID);
+    RoomDbService roomDbService = RoomDbService(widget.roomName, widget.roomID);
 
     return new IconTheme(
       data: new IconThemeData(color: Theme.of(context).accentColor),
@@ -159,7 +165,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                           validator: (val) =>
                               val.isEmpty ? "Your reply cannot be empty" : null,
 //                        onSubmitted: (String msg) {
-//                          dbService.sendMessage(
+//                          roomDbService.sendMessage(
 //                              msg, snapshot.data, widget.questionID);
 //                          _cleanUp();
 //                        },
@@ -177,7 +183,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                                       child: new Text("Submit"),
                                       onPressed: () {
                                         if (_formKey.currentState.validate()) {
-                                          dbService.sendMessage(
+                                          roomDbService.sendMessage(
                                               textController.text,
                                               snapshot.data,
                                               widget.questionID);
@@ -189,7 +195,7 @@ class _ChatRoomPageState extends State<ChatRoomPage>
                                       icon: new Icon(Icons.message),
                                       onPressed: () {
                                         if (_formKey.currentState.validate()) {
-                                          dbService.sendMessage(
+                                          roomDbService.sendMessage(
                                               textController.text,
                                               snapshot.data,
                                               widget.questionID);

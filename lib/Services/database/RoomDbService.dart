@@ -25,7 +25,7 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
     int timeNow = DateTime.now().millisecondsSinceEpoch;
     int timeDifference = timeNow - docSS.data["timeCreated"];
 
-    if (numUsers == 0 && timeDifference >= 300000) { // if no users and it has been more than 5 minutes since the room is created, delete that room
+    if (numUsers == 0 && timeDifference >= 36000000) { // if no users and it has been more than 10 hours since the room is created, delete that room
       await roomsCollection.document(roomID).delete();
       print("Room with name " + roomName + " has been deleted");
     }
