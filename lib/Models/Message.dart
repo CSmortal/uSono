@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orbital_2020_usono_my_ver/Models/QuestionDetails.dart';
 import 'package:orbital_2020_usono_my_ver/Models/RoomDetails.dart';
@@ -82,7 +83,7 @@ class _MessageState extends State<Message> {
                                 builder: (context, snapshot1) {
                                   if (!snapshot1.hasData) {
                                     return Center(
-                                        child: CircularProgressIndicator());
+                                        child: Container());
                                   } else {
                                     // print("Current Votes: " + "${snapshot1.data.data["votes"]}");
                                     return Text(
@@ -129,42 +130,50 @@ class _MessageState extends State<Message> {
                         ],
                       ),
                     ),
-                    FutureBuilder<bool>(
-                        future: userDbService.getMessageArchivedStatus(
-                            widget.messageID),
-                        builder: (context, snapshot3) {
+                    FutureBuilder(
+                        future: Future.wait([
+                          userDbService.getMessageArchivedStatus(widget.messageID),
+                          FirebaseAuth.instance.currentUser(),
+                        ]),
+                        builder: (context, snapshotList) {
+                          bool alreadyArchived;
+                          FirebaseUser user;
 
-                          bool alreadyArchived = snapshot3.data;
-
-                          if (!snapshot3.hasData) {
-                            return CircularProgressIndicator();
+                          if (!snapshotList.hasData) {
+                            return Container();
                           } else {
-                            return new InkWell(
-                              child: Container(
-                                  height: 30,
-                                  width: 30,
-                                  alignment: Alignment.centerRight,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white),
-                                  child: Icon(
-                                      alreadyArchived ? Icons.bookmark : Icons.bookmark_border,
-                                      color: alreadyArchived ? Colors.red[200] : null)
-                              ),
+                            alreadyArchived = snapshotList.data[0];
+                            user = snapshotList.data[1];
 
-                              onTap: () async {
-                                CollectionReference archivedCollection = Firestore
-                                    .instance.collection("Users");
-                                CollectionReference messages = archivedCollection
-                                    .document(user.uid).collection(
-                                    "Archived Messages");
 
-                                if (alreadyArchived) {
-                                  userDbService.deleteArchivedMessage(widget.messageID);
-                                } else {
-                                  userDbService.addArchivedMessage(widget.text, widget.messageID, questionDetails.question,
-                                      roomDetails.roomName, widget.sender);
-                                }
-                              },
+                            return user.email == null
+                              ? Container()
+                              : InkWell(
+                                  child: Container(
+                                      height: 30,
+                                      width: 30,
+                                      alignment: Alignment.centerRight,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white),
+                                      child: Icon(
+                                          alreadyArchived ? Icons.bookmark : Icons.bookmark_border,
+                                          color: alreadyArchived ? Colors.red[200] : null)
+                                  ),
+
+                                  onTap: () async {
+                                    CollectionReference archivedCollection = Firestore
+                                        .instance.collection("Users");
+                                    CollectionReference messages = archivedCollection
+                                        .document(user.uid).collection(
+                                        "Archived Messages");
+
+                                    if (alreadyArchived) {
+                                      userDbService.deleteArchivedMessage(widget.messageID);
+                                    } else {
+                                      userDbService.addArchivedMessage(widget.text, widget.messageID, questionDetails.question,
+                                          roomDetails.roomName, widget.sender);
+                                    }
+                                  },
                             );
                           }
 
