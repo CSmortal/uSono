@@ -12,6 +12,7 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class Home extends StatefulWidget {
   //SelectionPage({Key key, @required this.alias}) : super(key: key);
@@ -31,6 +32,7 @@ class _HomeState extends State<Home> {
   Stream<List<DocumentSnapshot>> stream;
   var radius = BehaviorSubject<double>.seeded(1.0);
   var refreshKey = GlobalKey<RefreshIndicatorState>();
+  double _userRadius = 0.05;
 
   @override
   void initState() {
@@ -57,7 +59,9 @@ class _HomeState extends State<Home> {
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Close"),
+              child: new Text(
+                "Close",
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -84,10 +88,11 @@ class _HomeState extends State<Home> {
       var collectionRef = _firestore.collection('Rooms');
       // print(_position.latitude);
       // print(_position.longitude);
+      double userRadius = _userRadius * 1000;
       return geo.collection(collectionRef: collectionRef).within(
           center: geo.point(
               latitude: _position.latitude, longitude: _position.longitude),
-          radius: 1.1,
+          radius: userRadius,
           field: 'position',
           strictMode: false);
     }), builder: (BuildContext context,
@@ -129,7 +134,7 @@ class _HomeState extends State<Home> {
 
                 double _roomLat = (await docRef.get()).data["Latitude"];
                 double _roomLng = (await docRef.get()).data["Longitude"];
-                int radius = (await docRef.get()).data["Radius"];
+                double _roomRadius = (await docRef.get()).data["Radius"];
 
                 print("Lat: $_roomLat");
                 print("Lng: $_roomLng");
@@ -140,8 +145,10 @@ class _HomeState extends State<Home> {
                     _roomLat,
                     _roomLng);
 
-                print("Dist: $distanceInMeters");
-                if (distanceInMeters <= 50.0) {
+                double distanceInKm = distanceInMeters / 1000;
+
+                print("Dist: $distanceInKm");
+                if (distanceInKm <= _roomRadius) {
                   Navigator.of(context).pushNamed(
                     '/QuestionPage',
                     arguments: {
@@ -149,9 +156,8 @@ class _HomeState extends State<Home> {
                       "roomID": roomID,
                     },
                   );
-                } else if (distanceInMeters > radius) {
-                  int distanceApart = distanceInMeters.toInt();
-                  int diff = distanceApart - radius;
+                } else if (distanceInKm > _roomRadius) {
+                  double diff = distanceInKm - _roomRadius;
                   _popUp(diff);
                   refreshList();
                 }
@@ -247,29 +253,60 @@ class _HomeState extends State<Home> {
                   },
                   child: Container(
                     height: 60,
-                    width: MediaQuery.of(context).size.width / 4,
+                    width: MediaQuery.of(context).size.width / 5,
                     decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     child: Icon(Icons.arrow_back),
+                  )),
+              InkWell(
+                  onTap: () => showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 60),
+                          child: Column(
+                            children: [
+                              new Text(
+                                "Filter rooms by this distance(km)",
+                                style: TextStyle(fontWeight: FontWeight.w400),
+                              ),
+                              new TextField(
+                                  // decoration: new InputDecoration(
+                                  //     labelText: "Enter your number"),
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _userRadius = double.parse(value);
+                                    });
+                                  }),
+                              // OR
+                              // new NumberPicker.decimal(
+                              //     initialValue: _userRadius,
+                              //     minValue: 0,
+                              //     maxValue: 5,
+                              //     decimalPlaces: 2,
+                              //     onChanged: (newValue) =>
+                              //         setState(() => _userRadius = newValue)),
+                              // no work, dk why
+                            ],
+                          ),
+                        );
+                      }),
+                  child: Container(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width / 5,
+                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
+                    // Get a better icon legit
+                    child: Icon(Icons.settings),
                   )),
               InkWell(
                   onTap: () => AllSettingsPanel()
                       .showSettingsPanel(context, SettingsPanel.chatRoom),
                   child: Container(
                     height: 60,
-                    width: MediaQuery.of(context).size.width / 4,
+                    width: MediaQuery.of(context).size.width / 5,
                     decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     child: Icon(Icons.add_box),
-                  )),
-              InkWell(
-                  onTap: () async {
-                    refreshList();
-                  },
-                  child: Container(
-                    height: 60,
-                    width: MediaQuery.of(context).size.width / 4,
-                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
-                    // Get a better icon legit
-                    child: Icon(Icons.refresh),
                   )),
               InkWell(
                   onTap: () => Navigator.of(context).pushNamed(
@@ -277,10 +314,21 @@ class _HomeState extends State<Home> {
                       ),
                   child: Container(
                     height: 60,
-                    width: MediaQuery.of(context).size.width / 4,
+                    width: MediaQuery.of(context).size.width / 5,
                     decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
                     // Get a better icon legit
                     child: Icon(Icons.bookmark),
+                  )),
+              InkWell(
+                  onTap: () async {
+                    refreshList();
+                  },
+                  child: Container(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width / 5,
+                    decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
+                    // Get a better icon legit
+                    child: Icon(Icons.refresh),
                   )),
             ]),
           );

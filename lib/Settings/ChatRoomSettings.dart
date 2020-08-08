@@ -17,7 +17,7 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
   final RoomDbService _database = new RoomDbService();
   Position _location = Position(latitude: 0.0, longitude: 0.0);
   Geoflutterfire geo = Geoflutterfire();
-  int _radius = 20;
+  double _radius = 0.02; //in km, so this is 20m
 
   void _getCurrentLocation(String roomid) async {
     GeoFirePoint roomLocation;
@@ -76,13 +76,14 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
             height: 15,
           ),
           new Text(
-            "Set the room radius: $_radius",
+            "Set the room radius: $_radius km",
             style: TextStyle(fontWeight: FontWeight.w400),
           ),
-          new NumberPicker.integer(
+          new NumberPicker.decimal(
               initialValue: _radius,
-              minValue: 20,
-              maxValue: 2000,
+              minValue: 0,
+              maxValue: 5,
+              decimalPlaces: 2,
               onChanged: (newValue) => setState(() => _radius = newValue)),
           SizedBox(height: 15),
           RaisedButton(
