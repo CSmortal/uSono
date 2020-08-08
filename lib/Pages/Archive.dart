@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:orbital_2020_usono_my_ver/Models/ArchivedMessage.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -47,11 +48,12 @@ class _ArchiveState extends State<Archive> {
                     return ListView.builder(
                       itemCount: snapshot.data.documents.length,
                       itemBuilder: (context, index) {
-                        return Message(
-                          text: snapshot.data.documents[index].data["text"],
-                          sender: snapshot.data.documents[index].data["from"],
-                          messageID: snapshot.data.documents[index].documentID
-                              .toString(),
+                        print(snapshot.data.documents[index].documentID);
+                        return ArchivedMessage(
+                          snapshot.data.documents[index].documentID,
+                          snapshot.data.documents[index].data["message"],
+                          snapshot.data.documents[index].data["question"],
+                          snapshot.data.documents[index].data["roomName"],
                         );
                       },
                     );

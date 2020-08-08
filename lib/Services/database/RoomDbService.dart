@@ -25,7 +25,7 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
     int timeNow = DateTime.now().millisecondsSinceEpoch;
     int timeDifference = timeNow - docSS.data["timeCreated"];
 
-    if (numUsers == 0 && timeDifference >= 5000) { // if no users and it has been more than 5 minutes since the room is created, delete that room
+    if (numUsers == 0 && timeDifference >= 36000000) { // if no users and it has been more than 10 hours since the room is created, delete that room
       await roomsCollection.document(roomID).delete();
       print("Room with name " + roomName + " has been deleted");
     }
@@ -96,6 +96,25 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
 
     Stream<DocumentSnapshot> getMessageVotes(String questionID, String messageID) {
       return roomsCollection.document(roomID).collection('Questions').document(questionID).collection('Messages').document(messageID).snapshots();
+    }
+    
+    Future<String> getQuestionVoteStatus(String userID, String questionID) async {
+      Map<String,dynamic> voteMap = (await roomsCollection.document(roomID).collection('Questions').document(questionID).get()).data["voteMap"];
+      if (voteMap.containsKey(userID)) {
+        return voteMap[userID];
+      } else { // not initialised yet
+        return "Neutral";
+      }
+    }
+
+    Future<String> getMessageVoteStatus(String userID, String questionID, String messageID) async {
+      Map<String,dynamic> voteMap = (await roomsCollection.document(roomID).collection('Questions').document(questionID)
+          .collection('Messages').document(messageID).get()).data["voteMap"];
+      if (voteMap.containsKey(userID)) {
+        return voteMap[userID];
+      } else { // not initialised yet
+        return "Neutral";
+      }
     }
 
     // To implement voting, we will have to add a Map<String, bool> to each question in the database. Create a function

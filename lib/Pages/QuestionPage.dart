@@ -24,7 +24,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget _questionList() {
     return StreamBuilder<QuerySnapshot>(
-        stream: RoomDbService(roomName, roomID).getRoomQuestions(),
+        stream: RoomDbService(roomName, roomID).getRoomQuestions(), // in descending order of votes
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return new Text('Loading...');
