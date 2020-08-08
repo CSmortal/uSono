@@ -44,6 +44,30 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _popUp(var dist) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("You're too far away!"),
+          content:
+              new Text("You're ${dist}m away from the border of this room"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<Null> refreshList() async {
     // refreshKey.currentState?.show(atTop: true);
     // setState(() => loading = true);
@@ -63,7 +87,7 @@ class _HomeState extends State<Home> {
       return geo.collection(collectionRef: collectionRef).within(
           center: geo.point(
               latitude: _position.latitude, longitude: _position.longitude),
-          radius: 0.050,
+          radius: 1.1,
           field: 'position',
           strictMode: false);
     }), builder: (BuildContext context,
@@ -96,10 +120,8 @@ class _HomeState extends State<Home> {
             color: color,
             child: GestureDetector(
               onTap: () async {
-
-                DocumentReference docRef = Firestore.instance
-                    .collection("Rooms")
-                    .document(roomID);
+                DocumentReference docRef =
+                    Firestore.instance.collection("Rooms").document(roomID);
 
                 int currNumUsers = (await docRef.get()).data["numUsers"];
 
@@ -107,6 +129,7 @@ class _HomeState extends State<Home> {
 
                 double _roomLat = (await docRef.get()).data["Latitude"];
                 double _roomLng = (await docRef.get()).data["Longitude"];
+                int radius = (await docRef.get()).data["Radius"];
 
                 print("Lat: $_roomLat");
                 print("Lng: $_roomLng");
@@ -126,8 +149,10 @@ class _HomeState extends State<Home> {
                       "roomID": roomID,
                     },
                   );
-                } else if (distanceInMeters > 50.0) {
-                  print("You've too far away from this room!");
+                } else if (distanceInMeters > radius) {
+                  int distanceApart = distanceInMeters.toInt();
+                  int diff = distanceApart - radius;
+                  _popUp(diff);
                   refreshList();
                 }
               },
@@ -233,7 +258,6 @@ class _HomeState extends State<Home> {
                     height: 60,
                     width: MediaQuery.of(context).size.width / 4,
                     decoration: BoxDecoration(color: Hexcolor('#CDC3D5')),
-                    // Get a better icon legit
                     child: Icon(Icons.add_box),
                   )),
               InkWell(
