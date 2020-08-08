@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/RoomDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Shared/constants.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,6 +17,7 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
   final RoomDbService _database = new RoomDbService();
   Position _location = Position(latitude: 0.0, longitude: 0.0);
   Geoflutterfire geo = Geoflutterfire();
+  double _radius = 0.02; //in km, so this is 20m
 
   void _getCurrentLocation(String roomid) async {
     GeoFirePoint roomLocation;
@@ -40,6 +42,10 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
         .collection('Rooms')
         .document(roomid)
         .setData({'Longitude': _location.longitude}, merge: true);
+    Firestore.instance
+        .collection('Rooms')
+        .document(roomid)
+        .setData({'Radius': _radius}, merge: true);
   }
 
   @override
@@ -48,6 +54,13 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
+          new Text(
+            "Room Name:",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          new SizedBox(
+            height: 5,
+          ),
           TextFormField(
             validator: (value) => value.length < 4
                 ? 'Room Names should be at least 4 characters long'
@@ -59,6 +72,19 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
             },
             decoration: textInputDecoration,
           ),
+          new SizedBox(
+            height: 15,
+          ),
+          new Text(
+            "Set the room radius: $_radius km",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          new NumberPicker.decimal(
+              initialValue: _radius,
+              minValue: 0,
+              maxValue: 5,
+              decimalPlaces: 2,
+              onChanged: (newValue) => setState(() => _radius = newValue)),
           SizedBox(height: 15),
           RaisedButton(
             color: Colors.pink[400],
