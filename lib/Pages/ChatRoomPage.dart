@@ -52,8 +52,8 @@ class _ChatRoomPageState extends State<ChatRoomPage>
     return MultiProvider(
 
       providers: [
-        Provider<RoomDetails>.value(value: RoomDetails(widget.roomName, widget.roomID)),
-        Provider<QuestionDetails>.value(value: QuestionDetails(widget.question, widget.questionID)),
+        Provider<RoomDetails>(create: (context) => RoomDetails(widget.roomName, widget.roomID)),
+        Provider<QuestionDetails>(create: (context) => QuestionDetails(widget.question, widget.questionID)),
       ],
 
       child: new Scaffold(
@@ -69,22 +69,6 @@ class _ChatRoomPageState extends State<ChatRoomPage>
           ),
           body: new Column(
             children: [
-//            new Container(
-//              color: Colors.red[200],
-//              constraints: BoxConstraints.expand(width: 400.0, height: 100.0),
-//              child: Align(
-//                alignment: Alignment.center,
-//                child: Text(
-//                  roomName,
-//                  style: (TextStyle(
-//                    color: Colors.white,
-//                    fontSize: 25,
-//                    fontWeight: FontWeight.w300,
-//                  )),
-//                ),
-//              ),
-//            ),
-
 
 
               new Flexible(

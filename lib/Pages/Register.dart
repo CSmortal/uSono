@@ -57,79 +57,80 @@ class _RegisterState extends State<Register> {
                       })
                 ],
               ),
-              body: Container(
-                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-                child: Form(
-                  key:
-                      _formKey, // associating our Form with a GlobalKey, which allows tracking of our Form's state, allowing form validation
-                  child: Column(
-                    children: [
-                      SizedBox(height: 20),
-                      TextFormField(
-                          decoration: textInputDecoration.copyWith(
-                              hintText:
-                                  'Email'), // belongs to constants.dart in the shared directory
-                          validator: (val) => val.isEmpty
-                              ? 'Enter an email'
-                              : null, // return null if form is valid
-                          onChanged: (val) {
-                            setState(() => email = val);
-                          }),
-                      SizedBox(height: 20),
-                      TextFormField(
-                          decoration: textInputDecoration.copyWith(
-                              hintText: 'Password'),
-                          obscureText: true,
-                          validator: (val) => val.length < 6
-                              ? 'Enter a password 6+ chars long'
-                              : null,
-                          onChanged: (val) {
-                            setState(() => password = val);
-                          }),
-                      SizedBox(height: 20),
-                      TextFormField(
-                          decoration: textInputDecoration.copyWith(
-                              hintText: 'Enter a nickname'),
-                          validator: (val) => val.length < 3
-                              ? 'Please enter a name at least 3 characters long'
-                              : null,
-                          onChanged: (val) {
-                            setState(() {
-                              name = val;
-                            });
-                          }),
-                      SizedBox(height: 20),
-                      RaisedButton(
-                          color: Colors.grey[200],
-                          child: Text('Register',
-                              style: TextStyle(color: Colors.black54)),
-                          onPressed: () async {
-                            if (_formKey.currentState.validate()) {
-                              // validates form based on form's state, using the validator properties in each FormField
+              body: SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+                  child: Form(
+                    key: _formKey, // associating our Form with a GlobalKey, which allows tracking of our Form's state, allowing form validation
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20),
+                        TextFormField(
+                            decoration: textInputDecoration.copyWith(
+                                hintText:
+                                    'Email'), // belongs to constants.dart in the shared directory
+                            validator: (val) => val.isEmpty
+                                ? 'Enter an email'
+                                : null, // return null if form is valid
+                            onChanged: (val) {
+                              setState(() => email = val);
+                            }),
+                        SizedBox(height: 20),
+                        TextFormField(
+                            decoration: textInputDecoration.copyWith(
+                                hintText: 'Password'),
+                            obscureText: true,
+                            validator: (val) => val.length < 6
+                                ? 'Enter a password 6+ chars long'
+                                : null,
+                            onChanged: (val) {
+                              setState(() => password = val);
+                            }),
+                        SizedBox(height: 20),
+                        TextFormField(
+                            decoration: textInputDecoration.copyWith(
+                                hintText: 'Enter a nickname'),
+                            validator: (val) => val.length < 3
+                                ? 'Please enter a name at least 3 characters long'
+                                : null,
+                            onChanged: (val) {
+                              setState(() {
+                                name = val;
+                              });
+                            }),
+                        SizedBox(height: 20),
+                        RaisedButton(
+                            color: Colors.grey[200],
+                            child: Text('Register',
+                                style: TextStyle(color: Colors.black54)),
+                            onPressed: () async {
+                              if (_formKey.currentState.validate()) {
+                                // validates form based on form's state, using the validator properties in each FormField
 
-                              setState(() => loading = true);
-                              // entire Form is valid if all validators return null
-                              dynamic result =
-                                  await _auth.registerWithEmailAndPassword(
-                                      email, password, name);
+                                setState(() => loading = true);
+                                // entire Form is valid if all validators return null
+                                dynamic result =
+                                    await _auth.registerWithEmailAndPassword(
+                                        email, password, name);
 
-                              if (result == null) {
-                                setState(() {
-                                  loading = false;
-                                  error = 'please supply a valid email';
-                                });
+                                if (result == null) {
+                                  setState(() {
+                                    loading = false;
+                                    error = 'please supply a valid email';
+                                  });
+                                }
+                                /* like before, there is no need for an else clause to make the Home widget appear if the user is successfully registered.
+                          Why? Because the widget tree is listening to the AuthService().user stream
+                          */
                               }
-                              /* like before, there is no need for an else clause to make the Home widget appear if the user is successfully registered.
-                        Why? Because the widget tree is listening to the AuthService().user stream
-                        */
-                            }
-                          }),
-                      SizedBox(height: 12),
-                      Text(
-                        error,
-                        style: TextStyle(color: Colors.red, fontSize: 14),
-                      ),
-                    ],
+                            }),
+                        SizedBox(height: 12),
+                        Text(
+                          error,
+                          style: TextStyle(color: Colors.red, fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -1,4 +1,3 @@
-import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -60,13 +59,13 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
     }
   }
 
-  Future sendQuestion(String qn, String sender) async {
+  Future sendQuestion(String qn, String senderUID) async {
     try {
       CollectionReference questions = roomsCollection.document(roomID).collection("Questions");
       // print("roomID: " + "$roomID");
       await questions.add({
         "text": qn,
-        "from": sender,
+        "from": senderUID,
         "time": DateTime.now().millisecondsSinceEpoch,
         "votes": 0,
         "voteMap": new Map<String,dynamic>(),
@@ -270,4 +269,18 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
     }
   }
 
+
+  Future editQuestion(String questionID, String newQuestion) async {
+    CollectionReference questions = roomsCollection.document(roomID).collection("Questions");
+    await questions.document(questionID).updateData({"text": newQuestion}); // should we save the time that is edited?
+  }
+
+  Future deleteQuestion(String questionID) async {
+    CollectionReference questions = roomsCollection.document(roomID).collection("Questions");
+    await questions.document(questionID).delete();
+  }
+
+  Future deleteMessage() async {
+
+  }
 }

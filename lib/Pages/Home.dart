@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:orbital_2020_usono_my_ver/Models/RoomDetails.dart';
 import 'package:orbital_2020_usono_my_ver/Models/User.dart';
 import 'package:orbital_2020_usono_my_ver/Services/database/UserDbService.dart';
 import 'package:orbital_2020_usono_my_ver/Settings/AllSettingsPanel.dart';
@@ -123,58 +125,61 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildListWidget(Color color, String roomName, String roomID) {
-    return Container(
-        height: 120,
-        child: Card(
-            semanticContainer: true,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            elevation: 5,
-            margin: EdgeInsets.all(10),
-            color: color,
-            child: GestureDetector(
-              onTap: () async {
-                DocumentReference docRef =
-                    Firestore.instance.collection("Rooms").document(roomID);
+    return Provider<RoomDetails>(
+      create: (context) => RoomDetails(roomName, roomID),
+      child: Container(
+          height: 120,
+          child: Card(
+              semanticContainer: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 5,
+              margin: EdgeInsets.all(10),
+              color: color,
+              child: GestureDetector(
+                onTap: () async {
+                  DocumentReference docRef =
+                      Firestore.instance.collection("Rooms").document(roomID);
 
-                int currNumUsers = (await docRef.get()).data["numUsers"];
+                  int currNumUsers = (await docRef.get()).data["numUsers"];
 
-                docRef.updateData({"numUsers": currNumUsers += 1});
+                  docRef.updateData({"numUsers": currNumUsers += 1});
 
-                double _roomLat = (await docRef.get()).data["Latitude"];
-                double _roomLng = (await docRef.get()).data["Longitude"];
-                double _roomRadius = (await docRef.get()).data["Radius"];
+                  double _roomLat = (await docRef.get()).data["Latitude"];
+                  double _roomLng = (await docRef.get()).data["Longitude"];
+                  double _roomRadius = (await docRef.get()).data["Radius"];
 
-                print("Lat: $_roomLat");
-                print("Lng: $_roomLng");
+                  print("Lat: $_roomLat");
+                  print("Lng: $_roomLng");
 
-                double distanceInMeters = await Geolocator().distanceBetween(
-                    _position.latitude,
-                    _position.longitude,
-                    _roomLat,
-                    _roomLng);
+                  double distanceInMeters = await Geolocator().distanceBetween(
+                      _position.latitude,
+                      _position.longitude,
+                      _roomLat,
+                      _roomLng);
 
-                double distanceInKm = distanceInMeters / 1000;
+                  double distanceInKm = distanceInMeters / 1000;
 
-                print("Dist: $distanceInKm");
-                if (distanceInKm <= _roomRadius) {
-                  Navigator.of(context).pushNamed(
-                    '/QuestionPage',
-                    arguments: {
-                      "roomName": roomName,
-                      "roomID": roomID,
-                    },
-                  );
-                } else if (distanceInKm > _roomRadius) {
-                  double diff = distanceInKm - _roomRadius;
-                  _popUp(diff);
-                  refreshList();
-                }
-              },
-              child: Text('\n  $roomName',
-                  style: TextStyle(color: Colors.black54, fontSize: 25)),
-            )));
+                  print("Dist: $distanceInKm");
+                  if (distanceInKm <= _roomRadius) {
+                    Navigator.of(context).pushNamed(
+                      '/QuestionPage',
+                      arguments: {
+                        "roomName": roomName,
+                        "roomID": roomID,
+                      },
+                    );
+                  } else if (distanceInKm > _roomRadius) {
+                    double diff = distanceInKm - _roomRadius;
+                    _popUp(diff);
+                    refreshList();
+                  }
+                },
+                child: Text('\n  $roomName',
+                    style: TextStyle(color: Colors.black54, fontSize: 25)),
+              ))),
+    );
   }
 
   @override
@@ -330,10 +335,34 @@ class _HomeState extends State<Home> {
                     child: Icon(Icons.add_box),
                   )),
               InkWell(
-                  onTap: () => Navigator.of(context).pushNamed(
+                  onTap: () async {
+                    FirebaseUser user =
+                        await FirebaseAuth.instance.currentUser();
+
+                    if (user.email == null) {
+                      showDialog(
+                        barrierDismissible: true,
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: Text(
+                              "Archiving not available to anonymous users!"),
+                          content: Text(
+                              "Please login to archive messages as well as to view them"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Ok'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context).pushNamed(
                         '/ArchivedPage',
                         // should pass room name, question
-                      ),
+                      );
+                    }
+                  },
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width / 5,
@@ -343,9 +372,9 @@ class _HomeState extends State<Home> {
                   )),
               InkWell(
                   onTap: () async {
-                    // print(_userRadius.toString());
-                    // _debugger();
-                    // refreshList();
+                    print(_userRadius.toString());
+                    _debugger();
+                    refreshList();
                   },
                   child: Container(
                     height: 60,

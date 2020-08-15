@@ -24,7 +24,7 @@ class ChatApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MultiProvider(
       providers: [
-        StreamProvider<User>.value(value: AuthService().user),
+        StreamProvider<User>(create: (context) => AuthService().user),
       ],
       child: MaterialApp(
         home: Wrapper(),

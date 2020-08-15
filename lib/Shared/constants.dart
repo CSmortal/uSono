@@ -11,7 +11,7 @@ const textInputDecoration = InputDecoration(
   ),
   focusedBorder: OutlineInputBorder(
     // applied when field is in focus)
-    borderSide: BorderSide(color: Colors.grey, width: 2),
+    borderSide: BorderSide(color: Colors.deepPurple, width: 2),
   ),
 );
 

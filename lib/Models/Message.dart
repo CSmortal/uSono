@@ -147,44 +147,61 @@ class _MessageState extends State<Message> {
                             alreadyArchived = snapshotList.data[0];
                             user = snapshotList.data[1];
 
-                            return user.email == null
-                                ? Container()
-                                : InkWell(
-                                    child: Container(
-                                        height: 30,
-                                        width: 30,
-                                        alignment: Alignment.centerRight,
-                                        decoration:
-                                            BoxDecoration(color: Colors.white),
-                                        child: Icon(
-                                            alreadyArchived
-                                                ? Icons.bookmark
-                                                : Icons.bookmark_border,
-                                            color: alreadyArchived
-                                                ? Colors.red[200]
-                                                : null)),
-                                    onTap: () async {
-                                      CollectionReference archivedCollection =
-                                          Firestore.instance
-                                              .collection("Users");
-                                      CollectionReference messages =
-                                          archivedCollection
-                                              .document(user.uid)
-                                              .collection("Archived Messages");
-
-                                      if (alreadyArchived) {
-                                        userDbService.deleteArchivedMessage(
-                                            widget.messageID);
-                                      } else {
-                                        userDbService.addArchivedMessage(
-                                            widget.text,
-                                            widget.messageID,
-                                            questionDetails.question,
-                                            roomDetails.roomName,
-                                            widget.sender);
-                                      }
-                                    },
+                            return InkWell(
+                              child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  alignment: Alignment.centerRight,
+                                  decoration:
+                                      BoxDecoration(color: Colors.white),
+                                  child: Icon(
+                                      alreadyArchived
+                                          ? Icons.bookmark
+                                          : Icons.bookmark_border,
+                                      color: alreadyArchived
+                                          ? Colors.red[200]
+                                          : null)),
+                              onTap: () async {
+                                if (user.email == null) {
+                                  showDialog(
+                                    barrierDismissible: true,
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      title: Text(
+                                          "Archiving not available to anonymous users!"),
+                                      content: Text(
+                                          "Please login to archive messages as well as to view them"),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text('Ok'),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                        ),
+                                      ],
+                                    ),
                                   );
+                                } else {
+                                  CollectionReference archivedCollection =
+                                      Firestore.instance.collection("Users");
+                                  CollectionReference messages =
+                                      archivedCollection
+                                          .document(user.uid)
+                                          .collection("Archived Messages");
+
+                                  if (alreadyArchived) {
+                                    userDbService.deleteArchivedMessage(
+                                        widget.messageID);
+                                  } else {
+                                    userDbService.addArchivedMessage(
+                                        widget.text,
+                                        widget.messageID,
+                                        questionDetails.question,
+                                        roomDetails.roomName,
+                                        widget.sender);
+                                  }
+                                }
+                              },
+                            );
                           }
                         }),
                   ],
