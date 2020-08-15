@@ -82,7 +82,7 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
           new NumberPicker.decimal(
               initialValue: _radius,
               minValue: 0,
-              maxValue: 5,
+              maxValue: 2,
               decimalPlaces: 2,
               onChanged: (newValue) => setState(() => _radius = newValue)),
           SizedBox(height: 15),

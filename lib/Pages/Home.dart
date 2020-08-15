@@ -12,7 +12,7 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:numberpicker/numberpicker.dart';
+import 'package:geocoder/geocoder.dart';
 
 class Home extends StatefulWidget {
   //SelectionPage({Key key, @required this.alias}) : super(key: key);
@@ -33,6 +33,7 @@ class _HomeState extends State<Home> {
   var radius = BehaviorSubject<double>.seeded(1.0);
   var refreshKey = GlobalKey<RefreshIndicatorState>();
   double _userRadius = 0.05;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -46,6 +47,16 @@ class _HomeState extends State<Home> {
     });
   }
 
+  // _getAddress(_position) {
+  //   addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+  //   first = addresses.first;
+  //   print("${first.featureName} : ${first.addressLine}");
+  // }
+
+  _debugger() {
+    print("Hey!");
+  }
+
   void _popUp(var dist) {
     // flutter defined function
     showDialog(
@@ -54,8 +65,8 @@ class _HomeState extends State<Home> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("You're too far away!"),
-          content:
-              new Text("You're ${dist}m away from the border of this room"),
+          content: new Text(
+              "You're ${dist.toStringAsFixed(3)}km away from the border of this room"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -88,11 +99,10 @@ class _HomeState extends State<Home> {
       var collectionRef = _firestore.collection('Rooms');
       // print(_position.latitude);
       // print(_position.longitude);
-      double userRadius = _userRadius * 1000;
       return geo.collection(collectionRef: collectionRef).within(
           center: geo.point(
               latitude: _position.latitude, longitude: _position.longitude),
-          radius: userRadius,
+          radius: _userRadius,
           field: 'position',
           strictMode: false);
     }), builder: (BuildContext context,
@@ -270,15 +280,26 @@ class _HomeState extends State<Home> {
                                 "Filter rooms by this distance(km)",
                                 style: TextStyle(fontWeight: FontWeight.w400),
                               ),
-                              new TextField(
-                                  // decoration: new InputDecoration(
-                                  //     labelText: "Enter your number"),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _userRadius = double.parse(value);
-                                    });
-                                  }),
+                              new Form(
+                                key: _formKey,
+                                child: TextFormField(
+                                    // decoration: new InputDecoration(
+                                    //     labelText: "Enter your number"),
+                                    keyboardType: TextInputType.number,
+                                    validator: (val) {
+                                      if (double.parse(val) > 2.0) {
+                                        return "The maximum range is 2 km!";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _userRadius = double.parse(val);
+                                      });
+                                      refreshList();
+                                    }),
+                              ),
                               // OR
                               // new NumberPicker.decimal(
                               //     initialValue: _userRadius,
@@ -322,7 +343,9 @@ class _HomeState extends State<Home> {
                   )),
               InkWell(
                   onTap: () async {
-                    refreshList();
+                    // print(_userRadius.toString());
+                    // _debugger();
+                    // refreshList();
                   },
                   child: Container(
                     height: 60,

@@ -24,6 +24,32 @@ class _SignInState extends State<SignIn> {
 
   bool anon = false;
 
+  void _popUp() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Could not sign in"),
+          content: new Text(
+              "The email or password entered is not valid. Try again!"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text(
+                "Close",
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return loading
@@ -130,8 +156,7 @@ class _SignInState extends State<SignIn> {
                                           if (result == null) {
                                             print("No record of this user");
                                             setState(() {
-                                              error =
-                                                  'COULD NOT SIGN IN WITH THOSE CREDENTIALS';
+                                              _popUp();
                                               loading =
                                                   false; // no longer display loading widget if ...
                                             });

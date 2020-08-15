@@ -24,7 +24,6 @@ class _MessageState extends State<Message> {
 //  final AnimationController animationController;
 //  static String defaultUserName = "You";
 
-
   @override
   Widget build(BuildContext context) {
 //    return new SizeTransition( // SizeTransition wraps around the widget that it wants to animate, in this case Container.
@@ -36,8 +35,8 @@ class _MessageState extends State<Message> {
     final user = Provider.of<User>(context);
     final roomDetails = Provider.of<RoomDetails>(context);
     final questionDetails = Provider.of<QuestionDetails>(context);
-    final roomDbService = RoomDbService(
-        roomDetails.roomName, roomDetails.roomID);
+    final roomDbService =
+        RoomDbService(roomDetails.roomName, roomDetails.roomID);
     final userDbService = UserDbService(uid: user.uid);
 
     String displayName;
@@ -62,28 +61,31 @@ class _MessageState extends State<Message> {
                 return new Row(
                   children: [
                     FutureBuilder(
-                        future: roomDbService.getMessageVoteStatus(
-                            user.uid, questionDetails.questionID,
-                            widget.messageID),
+                        future: roomDbService.getMessageVoteStatus(user.uid,
+                            questionDetails.questionID, widget.messageID),
                         builder: (context, snapshot2) {
                           return Column(
                             // the stack overflow functionality
                             children: <Widget>[
                               InkWell(
                                 child: snapshot2.data == "Upvoted"
-                                    ? Icon(Icons.arrow_drop_up, color: Colors.blue[500])
+                                    ? Icon(Icons.arrow_drop_up,
+                                        color: Colors.blue[500])
                                     : Icon(Icons.arrow_drop_up),
                                 onTap: () {
-                                  dynamic result = roomDbService
-                                      .upvoteMessage(widget.messageID, questionDetails.questionID, user.uid);
+                                  dynamic result = roomDbService.upvoteMessage(
+                                      widget.messageID,
+                                      questionDetails.questionID,
+                                      user.uid);
                                 },
                               ),
                               StreamBuilder<DocumentSnapshot>(
-                                stream: roomDbService.getMessageVotes(questionDetails.questionID, widget.messageID),
+                                stream: roomDbService.getMessageVotes(
+                                    questionDetails.questionID,
+                                    widget.messageID),
                                 builder: (context, snapshot1) {
                                   if (!snapshot1.hasData) {
-                                    return Center(
-                                        child: Container());
+                                    return Center(child: Container());
                                   } else {
                                     // print("Current Votes: " + "${snapshot1.data.data["votes"]}");
                                     return Text(
@@ -93,12 +95,14 @@ class _MessageState extends State<Message> {
                               ),
                               InkWell(
                                 child: snapshot2.data == "Downvoted"
-                                    ? Icon(Icons.arrow_drop_down, color: Colors.red[500])
+                                    ? Icon(Icons.arrow_drop_down,
+                                        color: Colors.red[500])
                                     : Icon(Icons.arrow_drop_down),
                                 onTap: () {
                                   roomDbService.downvoteMessage(
                                       widget.messageID,
-                                      questionDetails.questionID, user.uid);
+                                      questionDetails.questionID,
+                                      user.uid);
 //                                  setState(() {
 //                                    alreadyDownvoted = !alreadyDownvoted;
 //                                    if (alreadyUpvoted) {
@@ -109,8 +113,7 @@ class _MessageState extends State<Message> {
                               ),
                             ],
                           );
-                        }
-                    ),
+                        }),
                     new SizedBox(
                       width: 15,
                     ),
@@ -119,10 +122,8 @@ class _MessageState extends State<Message> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           new Text(displayName,
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .subtitle1),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          //Theme.of(context).textTheme.subtitle1),
                           new Container(
                             margin: const EdgeInsets.only(top: 6),
                             child: new Text(widget.text),
@@ -132,7 +133,8 @@ class _MessageState extends State<Message> {
                     ),
                     FutureBuilder(
                         future: Future.wait([
-                          userDbService.getMessageArchivedStatus(widget.messageID),
+                          userDbService
+                              .getMessageArchivedStatus(widget.messageID),
                           FirebaseAuth.instance.currentUser(),
                         ]),
                         builder: (context, snapshotList) {
@@ -145,48 +147,51 @@ class _MessageState extends State<Message> {
                             alreadyArchived = snapshotList.data[0];
                             user = snapshotList.data[1];
 
-
                             return user.email == null
-                              ? Container()
-                              : InkWell(
-                                  child: Container(
-                                      height: 30,
-                                      width: 30,
-                                      alignment: Alignment.centerRight,
-                                      decoration: BoxDecoration(
-                                          color: Colors.white),
-                                      child: Icon(
-                                          alreadyArchived ? Icons.bookmark : Icons.bookmark_border,
-                                          color: alreadyArchived ? Colors.red[200] : null)
-                                  ),
+                                ? Container()
+                                : InkWell(
+                                    child: Container(
+                                        height: 30,
+                                        width: 30,
+                                        alignment: Alignment.centerRight,
+                                        decoration:
+                                            BoxDecoration(color: Colors.white),
+                                        child: Icon(
+                                            alreadyArchived
+                                                ? Icons.bookmark
+                                                : Icons.bookmark_border,
+                                            color: alreadyArchived
+                                                ? Colors.red[200]
+                                                : null)),
+                                    onTap: () async {
+                                      CollectionReference archivedCollection =
+                                          Firestore.instance
+                                              .collection("Users");
+                                      CollectionReference messages =
+                                          archivedCollection
+                                              .document(user.uid)
+                                              .collection("Archived Messages");
 
-                                  onTap: () async {
-                                    CollectionReference archivedCollection = Firestore
-                                        .instance.collection("Users");
-                                    CollectionReference messages = archivedCollection
-                                        .document(user.uid).collection(
-                                        "Archived Messages");
-
-                                    if (alreadyArchived) {
-                                      userDbService.deleteArchivedMessage(widget.messageID);
-                                    } else {
-                                      userDbService.addArchivedMessage(widget.text, widget.messageID, questionDetails.question,
-                                          roomDetails.roomName, widget.sender);
-                                    }
-                                  },
-                            );
+                                      if (alreadyArchived) {
+                                        userDbService.deleteArchivedMessage(
+                                            widget.messageID);
+                                      } else {
+                                        userDbService.addArchivedMessage(
+                                            widget.text,
+                                            widget.messageID,
+                                            questionDetails.question,
+                                            roomDetails.roomName,
+                                            widget.sender);
+                                      }
+                                    },
+                                  );
                           }
-
                         }),
                   ],
                 );
               }
-            }
-        ),
+            }),
       ),
     );
   }
 }
-
-
-
