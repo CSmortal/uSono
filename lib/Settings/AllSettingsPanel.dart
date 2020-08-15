@@ -19,9 +19,25 @@ class AllSettingsPanel {
       case SettingsPanel.chatRoom:
         {
           showModalBottomSheet(
+
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(15.0),
+                  topRight: const Radius.circular(15.0),
+                ),
+              ),
+
+              isScrollControlled: true,
               context: context,
               builder: (context) {
                 return Container(
+//                  decoration: BoxDecoration(
+//                    borderRadius: BorderRadius.only(
+//                      topLeft: const Radius.circular(25.0),
+//                      topRight: const Radius.circular(25.0),
+//                    ),
+//                  ),
+                  height: MediaQuery.of(context).size.height * 0.7,
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 60),
                   child: ChatRoomSettingsForm(),
                 );
@@ -32,9 +48,23 @@ class AllSettingsPanel {
       case SettingsPanel.question:
         {
           showModalBottomSheet(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(15.0),
+                  topRight: const Radius.circular(15.0),
+                ),
+              ),
+              isScrollControlled: true,
               context: context,
               builder: (context) {
                 return Container(
+//                  decoration: BoxDecoration(
+//                    borderRadius: BorderRadius.only(
+//                      topLeft: const Radius.circular(25.0),
+//                      topRight: const Radius.circular(25.0),
+//                    ),
+//                  ),
+                  height: MediaQuery.of(context).size.height * 0.7,
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 60),
                   child: QuestionSettingsForm(roomName, roomID),
                 );

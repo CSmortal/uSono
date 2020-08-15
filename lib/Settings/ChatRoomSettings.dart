@@ -18,6 +18,8 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
   Position _location = Position(latitude: 0.0, longitude: 0.0);
   Geoflutterfire geo = Geoflutterfire();
   double _radius = 0.02; //in km, so this is 20m
+  int _charCount = 0;
+  int limit = 30;
 
   void _getCurrentLocation(String roomid) async {
     GeoFirePoint roomLocation;
@@ -56,28 +58,43 @@ class _ChatRoomSettingsFormState extends State<ChatRoomSettingsForm> {
         children: <Widget>[
           new Text(
             "Room Name:",
-            style: TextStyle(fontWeight: FontWeight.w400),
-          ),
-          new SizedBox(
-            height: 5,
-          ),
-          TextFormField(
-            validator: (value) => value.length < 4
-                ? 'Room Names should be at least 4 characters long'
-                : null,
-            onChanged: (text) {
-              setState(() {
-                _currentRoomName = text;
-              });
-            },
-            decoration: textInputDecoration,
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
           ),
           new SizedBox(
             height: 15,
           ),
+          TextFormField(
+
+            validator: (value) => value.length < 4
+                ? 'Room Names should be at least 4 characters long'
+                : value.length > limit
+                  ? 'Room Names should be at most 30 characters long'
+                  : null,
+
+            onChanged: (text) {
+              setState(() {
+                 _charCount = text.length;
+                _currentRoomName = text;
+              });
+            },
+            decoration: textInputDecoration.copyWith(
+                hintText: "Enter between 4 and $limit characters",
+                hintStyle: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey,
+                    fontSize: 14,
+                ),
+            ),
+          ),
+
+          Container(
+            height: 70,
+            child: Center(child: Text("Character count: " + "$_charCount")),
+          ),
+
           new Text(
             "Set the room radius: $_radius km",
-            style: TextStyle(fontWeight: FontWeight.w400),
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
           ),
           new NumberPicker.decimal(
               initialValue: _radius,

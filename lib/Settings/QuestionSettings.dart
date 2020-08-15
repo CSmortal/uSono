@@ -20,6 +20,8 @@ class QuestionSettingsForm extends StatefulWidget {
 class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
   final String roomName;
   final String roomID;
+  int _charCount = 0;
+  final int limit = 100;
   TextEditingController _controller = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -37,13 +39,31 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
           TextFormField(
             //validator fill in later
             controller: _controller,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+            onChanged: (value) {
+              setState(() {
+                _charCount = value.length;
+              });
+            },
 
             decoration: textInputDecoration.copyWith(
                 hintText: "Type in the question you would like to ask"),
 
-            validator: (val) => val.length < 6 ? "Question is too short" : null,
+            validator: (val) => val.length < 6
+                ? "Question is too short"
+                : val.length > limit
+                  ? "Question is too long. Please limit it to 100 characters"
+                  : null,
+
           ),
+
           SizedBox(height: 15),
+
+          Text("Character limit left: " + "${limit - _charCount}"),
+
+          SizedBox(height: 15),
+
           RaisedButton(
             color: Colors.pink[400],
             child: Text(
@@ -55,7 +75,7 @@ class _QuestionSettingsFormState extends State<QuestionSettingsForm> {
 
               if (_formKey.currentState.validate()) {
                 dbService.sendQuestion(_controller.text,
-                    await UserDbService(uid: user.uid).getNameFromUser());
+                    user.uid);
                 _controller.clear();
                 Navigator.pop(context);
               }

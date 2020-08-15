@@ -20,7 +20,7 @@ class ChatApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        StreamProvider<User>.value(value: AuthService().user),
+        StreamProvider<User>(create: (context) => AuthService().user),
       ],
       child: MaterialApp(
         home: Wrapper(),
