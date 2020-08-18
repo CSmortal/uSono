@@ -46,7 +46,7 @@ class _AnonSignInState extends State<AnonSignIn> {
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: AssetImage(
-                                'images/ivox_logo3.PNG',
+                                'images/logoforapp.PNG',
                               )))),
                           new Form(
                             key: _formKey,

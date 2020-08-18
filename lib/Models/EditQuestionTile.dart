@@ -31,7 +31,8 @@ class _EditQuestionTileState extends State<EditQuestionTile> {
   @override
   Widget build(BuildContext context) {
     TextEditingController _controller = new TextEditingController();
-    RoomDbService dbService = RoomDbService(roomDetails.roomName, roomDetails.roomID);
+    RoomDbService dbService =
+        RoomDbService(roomDetails.roomName, roomDetails.roomID);
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: 150),
@@ -46,11 +47,10 @@ class _EditQuestionTileState extends State<EditQuestionTile> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(15, 7, 15, 7),
           child: Row(
-            // mainAxisSize: MainAxisSize.min,
+              // mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-
                 Flexible(
-                  flex: 13,
+                  flex: 12,
                   child: Form(
                     key: _formKey,
                     child: TextFormField(
@@ -60,8 +60,8 @@ class _EditQuestionTileState extends State<EditQuestionTile> {
                       validator: (value) => value.length < 6
                           ? "Question is too short"
                           : value.length > limit
-                            ? "Question is too long. Please limit it to 100 characters"
-                            : null,
+                              ? "Question is too long. Please limit it to 100 characters"
+                              : null,
                       decoration: InputDecoration(
                         hintText: "Edit your question here...",
                       ),
@@ -71,11 +71,9 @@ class _EditQuestionTileState extends State<EditQuestionTile> {
                     ),
                   ),
                 ),
-
                 Spacer(
                   flex: 1,
                 ),
-
                 Flexible(
                   flex: 2,
                   child: Column(
@@ -84,35 +82,29 @@ class _EditQuestionTileState extends State<EditQuestionTile> {
                       InkWell(
                           child: Text("Submit"),
                           onTap: () async {
-
                             if (_formKey.currentState.validate()) {
                               print("Validation pass");
                               print(_controller.text);
-                              await dbService.editQuestion(questionDetails.questionID, _controller.text);
-                              print("Edited question with questionID " + questionDetails.questionID);
+                              await dbService.editQuestion(
+                                  questionDetails.questionID, _controller.text);
+                              print("Edited question with questionID " +
+                                  questionDetails.questionID);
                               widget.toggleEdit();
                             }
-                          }
-                      ),
-
+                          }),
                       InkWell(
                         child: Text("Cancel"),
                         onTap: widget.toggleEdit,
                       ),
-
                     ],
                   ),
                 )
-
-              ]
-          ),
+              ]),
         ),
       ),
     );
   }
 }
-
-
 
 //class EditQuestionTile extends StatelessWidget {
 //  final Function toggleEdit;

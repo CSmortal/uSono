@@ -83,7 +83,7 @@ class _SignInState extends State<SignIn> {
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image: AssetImage(
-                              'images/ivox_logo3.PNG',
+                              'images/logoforapp.PNG',
                             )))),
                         Padding(
                             padding: EdgeInsets.symmetric(
