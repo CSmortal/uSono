@@ -228,17 +228,21 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
         // print("currVotes: $currVotes"),
         relevantMsg.updateData({"votes": currVotes += 1})
       });
-      relevantMsg.setData({"voteMap": {userID: "Upvoted"}, }, merge: true);
+      relevantMsg.updateData({"voteMap.$userID": "Upvoted"});
 
     } else {
       if (voteStatus == "Upvoted") { // revoke upvote
-        await relevantMsg.updateData({"voteMap": {userID: "Neutral"}, "votes": currVotes -= 1});
+        await relevantMsg.updateData({"voteMap.$userID": "Neutral"});
+        await relevantMsg.updateData({"votes": currVotes -= 1});
+        print("userID $userID has neutralised the upvote");
       } else if (voteStatus == "Neutral") {
-        // print("currVotes: $currVotes");
-        await relevantMsg.updateData({"voteMap": {userID: "Upvoted"}, "votes": currVotes += 1});
+        await relevantMsg.updateData({"voteMap.$userID": "Upvoted"});
+        await relevantMsg.updateData({"votes": currVotes += 1});
+        print("userID $userID has upvoted this message");
       } else { // this user downvoted this qn previously
-        // print("currVotes: $currVotes");
-        await relevantMsg.updateData({"voteMap": {userID: "Upvoted"}, "votes": currVotes += 2});
+        await relevantMsg.updateData({"voteMap.$userID": "Upvoted"});
+        await relevantMsg.updateData({"votes" : currVotes += 2});
+        print("userID $userID who has previously downvoted this message has now upvoted it");
       }
     }
   }
@@ -265,17 +269,22 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
         // print("currVotes: $currVotes"),
         relevantMsg.updateData({"votes": currVotes -= 1})
       });
-      relevantMsg.setData({"voteMap": {userID: "Downvoted"}, }, merge: true);
+      relevantMsg.updateData({"voteMap.$userID": "Downvoted"});
 
     } else {
-      if (voteStatus == "Downvoted") { // revoke upvote
-        await relevantMsg.updateData({"voteMap": {userID: "Neutral"}, "votes": currVotes += 1});
+      if (voteStatus == "Downvoted") { // revoke downvote
+        await relevantMsg.updateData({"voteMap.$userID": "Neutral"});
+        await relevantMsg.updateData({"votes": currVotes += 1});
+        print("userID $userID has neutralised the downvote");
       } else if (voteStatus == "Neutral") {
-        // print("currVotes: $currVotes");
-        await relevantMsg.updateData({"voteMap": {userID: "Downvoted"}, "votes": currVotes -= 1});
-      } else { // this user downvoted this qn previously
-        // print("currVotes: $currVotes");
-        await relevantMsg.updateData({"voteMap": {userID: "Downvoted"}, "votes": currVotes -= 2});
+        await relevantMsg.updateData({"voteMap.$userID": "Downvoted"});
+        await relevantMsg.updateData({"votes": currVotes -= 1});
+        print("userID $userID has downvoted this message");
+      } else { // this user upvoted this qn previously
+        await relevantMsg.updateData({"voteMap.$userID": "Downvoted"});
+        await relevantMsg.updateData({"votes": currVotes -= 2});
+        print(
+            "userID $userID who has previously upvoted this message has now downvoted it");
       }
     }
   }
