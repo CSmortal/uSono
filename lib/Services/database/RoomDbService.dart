@@ -142,30 +142,36 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
           // print("currVotes: $currVotes"),
           relevantQn.updateData({"votes": currVotes += 1})
         });
-        relevantQn.setData({"voteMap": {userID: "Upvoted"}, }, merge: true);
+        relevantQn.updateData({"voteMap.$userID": "Upvoted"});
 
       } else {
         if (voteStatus == "Upvoted") { // revoke upvote
-          await relevantQn.updateData({"voteMap": {userID: "Neutral"}, "votes": currVotes -= 1});
+          await relevantQn.updateData({"voteMap.$userID": "Neutral"});
+          await relevantQn.updateData({"votes": currVotes -= 1});
+          print("userID $userID has neutralised the upvote");
         } else if (voteStatus == "Neutral") {
-          // print("currVotes: $currVotes");
-          await relevantQn.updateData({"voteMap": {userID: "Upvoted"}, "votes": currVotes += 1});
+          await relevantQn.updateData({"voteMap.$userID": "Upvoted"});
+          await relevantQn.updateData({"votes": currVotes += 1});
+          print("userID $userID has upvoted this question");
         } else { // this user downvoted this qn previously
-          // print("currVotes: $currVotes");
-          await relevantQn.updateData({"voteMap": {userID: "Upvoted"}, "votes": currVotes += 2});
+          await relevantQn.updateData({"voteMap.$userID": "Upvoted"});
+          await relevantQn.updateData({"votes" : currVotes += 2});
+          print("userID $userID who has previously downvoted this question has now upvoted it");
         }
       }
     }
 
   Future downvoteQuestion(String userID, String questionID) async {
 //
-    DocumentReference relevantQn = roomsCollection.document(roomID).collection('Questions').document(questionID);
+    DocumentReference relevantQn = roomsCollection.document(roomID).collection(
+        'Questions').document(questionID);
 //
     int currVotes;
     bool keyExists;
     String voteStatus;
 
-    await relevantQn.get().then((docSS) => {
+    await relevantQn.get().then((docSS) =>
+    {
       keyExists = docSS.data["voteMap"].containsKey(userID),
       if (keyExists) {
         voteStatus = docSS.data["voteMap"][userID],
@@ -174,22 +180,27 @@ class RoomDbService { // manages the Rooms collection in the database, and thus 
     });
 
     if (!keyExists) {
-      await relevantQn.get().then((docSS) => {
+      await relevantQn.get().then((docSS) =>
+      {
         currVotes = docSS.data["votes"],
         // print("currVotes: $currVotes"),
         relevantQn.updateData({"votes": currVotes -= 1})
       });
-      relevantQn.setData({"voteMap": {userID: "Downvoted"}, }, merge: true);
-
+      relevantQn.updateData({"voteMap.$userID": "Downvoted"});
     } else {
-      if (voteStatus == "Downvoted") {
-        await relevantQn.updateData({"voteMap": {userID: "Neutral"}, "votes": currVotes += 1});
+      if (voteStatus == "Downvoted") { // revoke downvote
+        await relevantQn.updateData({"voteMap.$userID": "Neutral"});
+        await relevantQn.updateData({"votes": currVotes += 1});
+        print("userID $userID has neutralised the downvote");
       } else if (voteStatus == "Neutral") {
-        // print("currVotes: $currVotes");
-        await relevantQn.updateData({"voteMap": {userID: "Downvoted"}, "votes": currVotes -= 1});
-      } else { // this user downvoted this qn previously
-        // print("currVotes: $currVotes");
-        await relevantQn.updateData({"voteMap": {userID: "Downvoted"}, "votes": currVotes -= 2});
+        await relevantQn.updateData({"voteMap.$userID": "Downvoted"});
+        await relevantQn.updateData({"votes": currVotes -= 1});
+        print("userID $userID has downvoted this question");
+      } else { // this user upvoted this qn previously
+        await relevantQn.updateData({"voteMap.$userID": "Downvoted"});
+        await relevantQn.updateData({"votes": currVotes -= 2});
+        print(
+            "userID $userID who has previously upvoted this question has now downvoted it");
       }
     }
   }
